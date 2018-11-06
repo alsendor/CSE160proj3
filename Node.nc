@@ -23,7 +23,7 @@ module Node {
     uses interface Flooding;
     uses interface NeighborDiscovery as NeighborDiscovery;
     uses interface DistanceVectorRouting as DistanceVectorRouting;
-    uses interface List<socket> as SocketList; 
+    uses interface List<socket_t> as SocketList;
 }
 
 implementation {
