@@ -88,6 +88,6 @@ implementation {
 
     event void CommandHandler.setAppClient() {}
 
-    event void closeConnection(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t num) {}
+    event void CommandHandler.closeConnection(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t num) {}
 
 }
