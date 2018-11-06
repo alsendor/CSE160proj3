@@ -11,15 +11,9 @@ class TestSim:
     moteids=[]
     # COMMAND TYPES
     CMD_PING = 0
-	CMD_NEIGHBOR_DUMP = 1
-	CMD_LINKSTATE_DUMP = 2
-	CMD_ROUTETABLE_DUMP = 3
-	CMD_TEST_CLIENT = 4
-	CMD_TEST_SERVER = 5
-	CMD_KILL = 6
-	CMD_PRINT_MESSAGE = 7
-    CMD_CLOSE_CONNCECTION = 8
-	CMD_ERROR = 9
+    CMD_NEIGHBOR_DUMP = 1
+    CMD_ROUTE_DUMP=3
+    CMD_PRINT_MESSAGE = 7
 
     # CHANNELS - see includes/channels.h
     COMMAND_CHANNEL="command";
@@ -134,7 +128,7 @@ class TestSim:
         self.sendCMD(self.CMD_NEIGHBOR_DUMP, destination, "neighbor command");
 
     def routeDMP(self, destination):
-        self.sendCMD(self.CMD_ROUTETABLE_DUMP, destination, "routing command");
+        self.sendCMD(self.CMD_ROUTE_DUMP, destination, "routing command");
 
     def addChannel(self, channelName, out=sys.stdout):
         print 'Adding Channel', channelName;
