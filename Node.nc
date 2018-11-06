@@ -82,12 +82,12 @@ implementation {
 
     event void CommandHandler.setTestServer(uint8_t address, uint8_t port) {}
 
-    event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t num) {}
+    event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t transfer) {}
 
     event void CommandHandler.setAppServer() {}
 
     event void CommandHandler.setAppClient() {}
 
-    event void CommandHandler.closeConnection(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t num) {}
+    event void CommandHandler.closeConnection(uint8_t clientAddress, uint16_t dest, uint8_t srcPort, uint8_t destPort) {}
 
 }
