@@ -76,6 +76,11 @@ implementation{
                 signal CommandHandler.setTestClient(buff[0], buff[1], buff[2], num);
                 break;
 
+            case CMD_CLOSE_CONNCECTION:
+              dbg(COMMAND_CHANNEL, "Command Type: Close Connection\n");
+              signal CommandHandler.closeConnection(buff[0], buff[1], buff[2]);
+              break;
+
             case CMD_PRINT_MESSAGE:
                 dbg(COMMAND_CHANNEL, "Command Type: Print Message\n");
                 signal CommandHandler.printMessage(&buff[0]);
