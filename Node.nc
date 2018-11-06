@@ -80,7 +80,7 @@ implementation {
         dbg(GENERAL_CHANNEL, "%s\n", payload);
     }
 
-    event void CommandHandler.setTestServer(uint8_t port) {}
+    event void CommandHandler.setTestServer(uint8_t address, uint8_t port) {}
 
     event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t num) {}
 
