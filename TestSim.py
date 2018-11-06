@@ -10,10 +10,16 @@ from CommandMsg import *
 class TestSim:
     moteids=[]
     # COMMAND TYPES
-    CMD_PING = 0
-    CMD_NEIGHBOR_DUMP = 1
-    CMD_ROUTE_DUMP=3
-    CMD_PRINT_MESSAGE = 7
+    CMD_PING = 0,
+	CMD_NEIGHBOR_DUMP=1,
+	CMD_LINKSTATE_DUMP=2,
+	CMD_ROUTETABLE_DUMP=3,
+	CMD_TEST_CLIENT=4,
+	CMD_TEST_SERVER=5,
+	CMD_KILL=6,
+	CMD_PRINT_MESSAGE=7,
+    CMD_CLOSE_CONNCECTION = 8,
+	CMD_ERROR=9
 
     # CHANNELS - see includes/channels.h
     COMMAND_CHANNEL="command";
