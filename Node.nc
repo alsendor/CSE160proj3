@@ -13,6 +13,7 @@
 #include "includes/CommandMsg.h"
 #include "includes/sendInfo.h"
 #include "includes/channels.h"
+#include "includes/socket.h"
 
 module Node {
     uses interface Boot;
@@ -22,6 +23,7 @@ module Node {
     uses interface Flooding;
     uses interface NeighborDiscovery as NeighborDiscovery;
     uses interface DistanceVectorRouting as DistanceVectorRouting;
+    uses interface List<socket> as SocketList; 
 }
 
 implementation {

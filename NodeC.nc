@@ -24,7 +24,7 @@ implementation {
 
     components ActiveMessageC;
     Node.AMControl -> ActiveMessageC;
-    
+
     components CommandHandlerC;
     Node.CommandHandler -> CommandHandlerC;
 
@@ -36,4 +36,7 @@ implementation {
 
     components DistanceVectorRoutingC;
     Node.DistanceVectorRouting -> DistanceVectorRoutingC;
+
+    components SocketListC;
+    Node.SocketList -> SocketListC;
 }
