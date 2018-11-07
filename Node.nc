@@ -28,6 +28,9 @@ module Node {
 
 implementation {
 
+    socket_t socket;
+    socket_t newSocket = 0;
+
     event void Boot.booted() {
         call AMControl.start();
         dbg(GENERAL_CHANNEL, "Booted\n");
@@ -82,14 +85,49 @@ implementation {
         dbg(GENERAL_CHANNEL, "%s\n", payload);
     }
 
-    event void CommandHandler.setTestServer(uint8_t address, uint8_t port) {}
+    event void CommandHandler.setTestServer(uint8_t address, uint8_t port) {
+        socket_addr_t requiredPort;
+        dbg(GENERAL_CHANNEL, "New server event. \n");
 
-    event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t transfer) {}
+        requiredPort.addr = TOS_NODE_ID;
+        requiredPort.port = port;
+        //socket = call Transport.socket();
+        //call Transport.listen(socket);
+
+        //call acceptTimer.startPeriodic(30000);
+    }
+
+    event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t transfer) {
+        socket_addr_t requiredPort;
+        socket_addr_t serverInfo;
+        dbg(GENERAL_CHANNEL, "New client event. \n");
+        dbg(GENERAL_CHANNEL, "");
+
+        requiredPort.addr = TOS_NODE_ID;
+        requiredPort.port = srcPort;
+        //socket = call Transport.socket();
+        //call Transport.listen(socket);
+
+        serverInfo.addr = dest;
+        serverInfo.port = destPort;
+        //call Transport.connect(socket, &serverInfo);
+
+        isNewConnection = 1;
+        nb = num;
+        numToSend = 0;
+        call writeTimer.startPeriodic(30000);
+    }
 
     event void CommandHandler.setAppServer() {}
 
     event void CommandHandler.setAppClient() {}
 
-    event void CommandHandler.closeConnection(uint8_t clientAddress, uint16_t dest, uint8_t srcPort, uint8_t destPort) {}
+    event void CommandHandler.closeConnection(uint8_t clientAddress, uint16_t dest, uint8_t srcPort, uint8_t destPort) {
+      //Impelement in TCProtocol
+      socket_t toClose;
+      toClose = call Transport.findSocket(dest, srcPort, destPort);
+      if (toClose != 0)
+         call Transport.close(toClose);
+    }
 
 }
