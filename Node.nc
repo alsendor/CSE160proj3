@@ -137,4 +137,12 @@ implementation {
          call Transport.close(toClose);
     }
 
+    event void acceptTimer.fired() {
+
+    }
+
+    event void writeTimer.fired() {
+      
+    }
+
 }
