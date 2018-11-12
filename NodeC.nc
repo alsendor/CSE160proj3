@@ -17,6 +17,8 @@ implementation {
     components MainC;
     components Node;
     components new AMReceiverC(AM_PACK) as GeneralReceive;
+    components new TimerMilliC() as acceptTimerC;
+    components new TimerMilliC() as writeTimerC;
 
     Node -> MainC.Boot;
 
@@ -39,4 +41,7 @@ implementation {
 
     components SocketListC;
     Node.SocketList -> SocketListC;
+
+    Node.acceptTimer -> acceptTimerC;
+    Node.writeTimer -> writeTimerC;
 }

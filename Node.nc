@@ -23,6 +23,9 @@ module Node {
     uses interface Flooding;
     uses interface NeighborDiscovery as NeighborDiscovery;
     uses interface DistanceVectorRouting as DistanceVectorRouting;
+
+    uses interface Timer<TMilli> as acceptTimer;
+    uses interface Timer<TMilli> as writeTimer;
     uses interface List<socket_t> as SocketList;
 }
 
@@ -30,6 +33,7 @@ implementation {
 
     socket_t socket;
     socket_t newSocket = 0;
+    uint8_t isNewConnection = 0;
 
     event void Boot.booted() {
         call AMControl.start();
@@ -91,10 +95,10 @@ implementation {
 
         requiredPort.addr = TOS_NODE_ID;
         requiredPort.port = port;
-        //socket = call Transport.socket();
-        //call Transport.listen(socket);
+        socket = call Transport.socket();
+        call Transport.listen(socket);
 
-        //call acceptTimer.startPeriodic(30000);
+        call acceptTimer.startPeriodic(30000);
     }
 
     event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t transfer) {
@@ -105,12 +109,12 @@ implementation {
 
         requiredPort.addr = TOS_NODE_ID;
         requiredPort.port = srcPort;
-        //socket = call Transport.socket();
-        //call Transport.listen(socket);
+        socket = call Transport.socket();
+        call Transport.listen(socket);
 
         serverInfo.addr = dest;
         serverInfo.port = destPort;
-        //call Transport.connect(socket, &serverInfo);
+        call Transport.connect(socket, &serverInfo);
 
         isNewConnection = 1;
         nb = num;
