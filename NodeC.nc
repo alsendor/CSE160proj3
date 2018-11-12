@@ -27,6 +27,9 @@ implementation {
     components TransportC;
     Node.Transport -> TransportC;
 
+    components new ListC(socket_t, 64) as SocketListC;
+    Node.SocketList -> SocketListC;
+
     components ActiveMessageC;
     Node.AMControl -> ActiveMessageC;
 
