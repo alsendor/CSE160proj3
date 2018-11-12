@@ -35,6 +35,8 @@ implementation {
     socket_t socket;
     socket_t newSocket = 0;
     uint8_t isNewConnection = 0;
+    uint16_t nb;
+    uint16_t numToSend;
 
     event void Boot.booted() {
         call AMControl.start();
@@ -118,7 +120,7 @@ implementation {
         call Transport.connect(socket, &serverInfo);
 
         isNewConnection = 1;
-        nb = num;
+        nb = transfer;
         numToSend = 0;
         call writeTimer.startPeriodic(30000);
     }
