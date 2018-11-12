@@ -24,6 +24,9 @@ implementation {
 
     Node.Receive -> GeneralReceive;
 
+    components TransportC;
+    Node.Transport -> TransportC;
+
     components ActiveMessageC;
     Node.AMControl -> ActiveMessageC;
 
