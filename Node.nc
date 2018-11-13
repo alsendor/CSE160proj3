@@ -37,6 +37,7 @@ implementation {
     uint8_t isNewConnection = 0;
     uint16_t nb;
     uint16_t numToSend;
+    uint8_t bytesWrittenOrRead;
 
     event void Boot.booted() {
         call AMControl.start();
@@ -132,17 +133,46 @@ implementation {
     event void CommandHandler.closeConnection(uint8_t clientAddress, uint16_t dest, uint8_t srcPort, uint8_t destPort) {
       //Impelement in TCProtocol
       socket_t toClose;
-      toClose = call Transport.findSocket(dest, srcPort, destPort);
+      //toClose = call Transport.findSocket(dest, srcPort, destPort);
       if (toClose != 0)
          call Transport.close(toClose);
     }
 
     event void acceptTimer.fired() {
+      socket_t tempSocket;
+      int i, size;
+      tempSocket = call Transport.accept(socket);
+      if (tempSocket != 0) {
+        call SocketList.pushback(tempSocket);
+      }
 
+      size = call SocketList.size();
+      for (i = 0; i < size; i++) {
+        newSocket = call SocketList.get(i);
+        nb = call Transport.read(newSocket, &numToSend, 2);
+
+         while (nb != 0) {
+            dbg(GENERAL_CHANNEL, "Socket %d received number: %d\n", newSocket, numToSend);
+            nb = call Transport.read(newSocket, &numToSend, 2);
+         }
+      }
     }
 
     event void writeTimer.fired() {
-      
+      if (isNewConnection == 1) {
+        while (isNewConnection) {
+          bytesWrittenOrRead = call Transport.write(socket, &numToSend, 2);
+          if (bytesWrittenOrRead == 2) {
+             numToSend++;
+          }
+          if (numToSend == nb+1) {
+             dbg(GENERAL_CHANNEL, "Client done sending number sequence.\n");
+             isNewConnection = 0;
+          }
+          if (bytesWrittenOrRead == 0)
+             break;
+        }
+      }
     }
 
 }
