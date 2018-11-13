@@ -36,7 +36,7 @@ implementation {
     socket_t newSocket = 0;
     uint8_t isNewConnection = 0;
     uint16_t nb;
-    uint16_t numToSend;
+    uint8_t numToSend;
     uint8_t bytesWrittenOrRead;
 
     event void Boot.booted() {
