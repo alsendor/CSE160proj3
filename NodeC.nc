@@ -45,9 +45,6 @@ implementation {
     components DistanceVectorRoutingC;
     Node.DistanceVectorRouting -> DistanceVectorRoutingC;
 
-    components SocketListC;
-    Node.SocketList -> SocketListC;
-
     Node.acceptTimer -> acceptTimerC;
     Node.writeTimer -> writeTimerC;
 }
