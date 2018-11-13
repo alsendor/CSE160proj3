@@ -172,8 +172,12 @@ implementation {
 
   }
 
-  command socket_t Transport.findSocket(uint16_t dest, uint8_t srcPort, uint8_t destPort);{
+  command socket_t Transport.findSocket(uint16_t dest, uint8_t srcPort, uint8_t destPort){
 
+
+  }
+
+  command socket_t Transport.findSocket(uint16_t dest, uint8_t srcPort, uint8_t destPort){
 
   }
 
