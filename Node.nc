@@ -22,7 +22,6 @@ module Node {
     uses interface CommandHandler;
     uses interface Flooding;
     uses interface Transport;
-    uses interface LinkStateInterface;
     uses interface NeighborDiscovery as NeighborDiscovery;
     uses interface DistanceVectorRouting as DistanceVectorRouting;
 
@@ -43,9 +42,8 @@ implementation {
     event void Boot.booted() {
         call AMControl.start();
         dbg(GENERAL_CHANNEL, "Booted\n");
-        call LinkStateInterface.start();
-        //call NeighborDiscovery.start();
-        //call DistanceVectorRouting.start();
+        call NeighborDiscovery.start();
+        call DistanceVectorRouting.start();
     }
 
     event void AMControl.startDone(error_t err) {
@@ -111,7 +109,7 @@ implementation {
         socket_addr_t requiredPort;
         socket_addr_t serverInfo;
         dbg(GENERAL_CHANNEL, "New client event. \n");
-        //dbg(GENERAL_CHANNEL, "");
+        dbg(GENERAL_CHANNEL, "");
 
         requiredPort.addr = TOS_NODE_ID;
         requiredPort.port = srcPort;
