@@ -111,7 +111,7 @@ implementation {
         socket_addr_t requiredPort;
         socket_addr_t serverInfo;
         dbg(GENERAL_CHANNEL, "New client event. \n");
-        dbg(GENERAL_CHANNEL, "");
+        //dbg(GENERAL_CHANNEL, "");
 
         requiredPort.addr = TOS_NODE_ID;
         requiredPort.port = srcPort;
