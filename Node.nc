@@ -22,6 +22,7 @@ module Node {
     uses interface CommandHandler;
     uses interface Flooding;
     uses interface Transport;
+    uses interface LinkStateInterface;
     uses interface NeighborDiscovery as NeighborDiscovery;
     uses interface DistanceVectorRouting as DistanceVectorRouting;
 
@@ -42,8 +43,9 @@ implementation {
     event void Boot.booted() {
         call AMControl.start();
         dbg(GENERAL_CHANNEL, "Booted\n");
-        call NeighborDiscovery.start();
-        call DistanceVectorRouting.start();
+        call LinkStateInterface.start();
+        //call NeighborDiscovery.start();
+        //call DistanceVectorRouting.start();
     }
 
     event void AMControl.startDone(error_t err) {
