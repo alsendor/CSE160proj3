@@ -23,7 +23,7 @@ typedef nx_struct pack{
 	nx_uint16_t seq;		//Sequence Number
 	nx_uint8_t TTL;		//Time to Live
 	nx_uint8_t protocol;
-	nx_uint8_t payload[PACKET_MAX_PAYLOAD_SIZE];
+	nx_uint8_t payload[TCP_MAX_PAYLOAD_SIZE];
 }pack;
 
 /*
