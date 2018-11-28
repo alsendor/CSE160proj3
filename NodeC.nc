@@ -28,6 +28,10 @@ implementation {
 
     Node.Sendor -> SimpleSendC;
 
+    Node.RecieveRoute -> RecieveRouteC;
+
+    Node.RecieveRouteReply -> RecieveRouteReply;
+
     components TransportC;
     Node.Transport -> TransportC;
 
