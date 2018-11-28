@@ -34,6 +34,10 @@ implementation {
 
     Node.RecieveRouteReply -> RecieveRouteReply;
 
+    Node.Flooding -> FloodingC;
+
+    Node.Sendor -> SimpleSendC;
+
     components TransportC;
     Node.Transport -> TransportC;
 
