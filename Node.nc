@@ -17,10 +17,13 @@
 
 module Node {
     uses interface Boot;
+
     uses interface SplitControl as AMControl;
     uses interface Receive;
+
     uses interface CommandHandler;
     uses interface Flooding;
+    
     uses interface Transport;
     uses interface NeighborDiscovery as NeighborDiscovery;
     uses interface DistanceVectorRouting as DistanceVectorRouting;

@@ -1,4 +1,6 @@
 #include "../../includes/socket.h"
+#include "../../includes/packet.h"
+#include "../../includes/am_types.h"
 
 configuration TransportC{
    provides interface Transport;
