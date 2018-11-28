@@ -166,15 +166,16 @@ implementation {
     }
 
     event message_t* RecieveRouteReply.receive(message_t* msg, void* payload, uint8_t length){
-       if(len==sizeof(pack)){
+       if(length == sizeof(pack)){
          pack* myMsg=(pack*) payload;
          dbg(GENERAL_CHANNEL, "REPLY ARRIVE:%s\n", myMsg->payload);
 
      }
       return msg;
    }
+
    event message_t* RecieveRoute.receive(message_t* msg, void* payload, uint8_t length){
-       if(len==sizeof(pack)){
+       if(length == sizeof(pack)){
          pack* myMsg=(pack*) payload;
          dbg(GENERAL_CHANNEL, "ARRIVE:%s\n\n", myMsg->payload);
 
