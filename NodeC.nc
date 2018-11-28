@@ -9,6 +9,8 @@
 
 #include <Timer.h>
 #include "includes/CommandMsg.h"
+#include "includes/channels.h"
+#include "includes/am_types.h"
 #include "includes/packet.h"
 
 configuration NodeC {
