@@ -23,8 +23,13 @@ typedef nx_struct pack{
 	nx_uint16_t seq;		//Sequence Number
 	nx_uint8_t TTL;		//Time to Live
 	nx_uint8_t protocol;
+<<<<<<< HEAD
 	nx_uint8_t payload[PACKET_MAX_PAYLOAD_SIZE];
 }pack; //TCPack goes inside the payload
+=======
+	nx_uint8_t payload[TCP_MAX_PAYLOAD_SIZE];
+}pack;
+>>>>>>> 0d239df4568ac169f3a70dadf233c8ec06f26f5c
 
 /*
  * logPack
