@@ -20,10 +20,14 @@ module Node {
 
     uses interface SplitControl as AMControl;
     uses interface Receive;
-
     uses interface CommandHandler;
-    uses interface Flooding;
-    
+
+    uses interface SimpleSend as Flooding;
+    uses interface SimpleSend as Sendor;
+
+    uses interface Receive as RecieveRoute;
+    uses interface Receive as RecieveRouteReply;
+
     uses interface Transport;
     uses interface NeighborDiscovery as NeighborDiscovery;
     uses interface DistanceVectorRouting as DistanceVectorRouting;
