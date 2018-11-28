@@ -19,8 +19,8 @@ implementation {
     components MainC;
     components Node;
     components new AMReceiverC(AM_PACK) as GeneralReceive;
-    components new FloodingC(AM_FLOODING) as FloodingC;
-    components new SimpleSend(AM_PACK) as SimpleSendC;
+    components new FloodingC(AM_FLOODING);
+    components new SimpleSend(AM_PACK);
     components new TimerMilliC() as acceptTimerC;
     components new TimerMilliC() as writeTimerC;
 
@@ -34,9 +34,6 @@ implementation {
 
     Node.RecieveRouteReply -> RecieveRouteReply;
 
-    Node.Flooding -> FloodingC;
-
-    Node.Sendor -> SimpleSendC;
 
     components TransportC;
     Node.Transport -> TransportC;
