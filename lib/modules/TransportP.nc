@@ -210,7 +210,17 @@ implementation {
    *    a closure with the fd passed, else return FAIL.
    */
   command error_t Transport.close(socket_t fd) {
+    socket_store_t socket;
+		 pack msg;
+		 TCPpack* tcp_msg;
 
+      dbg(GENERAL_CHANNEL, "Running Transport.Close\n");
+      if (call sockets.contains()) {
+        
+      }
+      else return FAIL;
+
+      return SUCCESS;
   }
 
   /**
