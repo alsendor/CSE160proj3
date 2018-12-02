@@ -10,6 +10,6 @@ implementation {
   components TransportP;
   Transport = TransportP;
 
-  components new ListC(socket_store_t, 10);
-  TransportP.sockets -> ListC;
+  components new Hashmap(socket_store_t, 10);
+  TransportP.sockets -> HashmapC;
 }

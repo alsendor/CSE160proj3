@@ -19,10 +19,20 @@
  module TransportP {
      provides interface Transport;
 
-     uses interface List<socket_store_t> as sockets;
+     uses interface Hashmap<socket_store_t> as sockets;
  }
 
 implementation {
+
+  command void Transport.makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
+		tcp_packet* tcpp = (tcp_packet*) payload;
+
+		Package->src = src;
+		Package->dest = dest;
+		Package->TTL = TTL;
+		Package->seq = seq;
+		memcpy(Package->payload, payload, TCP_MAX_PAYLOAD_SIZE);
+	}
 
   /**
    * Get a socket if there is one available.
@@ -131,7 +141,46 @@ implementation {
    *    a connection with the fd passed, else return FAIL.
    */
   command error_t Transport.connect(socket_t fd, socket_addr_t * addr) {
+    socket_store_t newConnection;
+		uint16_t seq;
+		pack msg;
+		uint8_t TTL;
+		TCPpack* tcp_msg;
+		uint8_t* payload = 0;
+		TTL = 18;
 
+    dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
+
+    //Check if the socket is in the socket hashmap
+    if (call sockets.contains(fd)) {
+      newConnection = call sockets.get(fd);
+			call sockets.remove(fd);
+
+      //Set destination port
+      newConnection.dest = *addr;
+
+      //Send SYN packet
+      tcp_msg->destPort = newConnection.dest.port;
+      tcp_msg->srcPort = newConnection.src;
+      tcp_msg->seq = seq;
+			tcp_msg->flag = SYN;
+			tcp_msg->numBytes = 0;
+      msg.dest = newConnection.dest.addr;
+			msg.src = TOS_NODE_ID;
+			msg.seq = seq;
+			msg.TTL = ttl;
+			msg.protocol = PROTOCOL_TCP;
+			memcpy(msg.payload, (void*)tcp_msg, TCP_MAX_PAYLOAD_SIZE);
+      /*call Transport.makePack(&msg, (uint16_t)TOS_NODE_ID, (uint16_t)newConnection.src,
+						(uint16_t)19,	PROTOCOL_TCP,(uint16_t)1,(void*)tcp_msg,(uint8_t)sizeof(tcp_msg));*/
+      newConnection.state = SYN_SENT;
+      call Transport.send(&newConnection, msg);
+
+      //Update hashtable
+      call sockets.insert(fd, newConnection);
+      return SUCCESS
+    }
+    else return FAIL;
   }
 
   /**
