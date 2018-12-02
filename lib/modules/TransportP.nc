@@ -106,7 +106,24 @@ implementation {
    *    packet or FAIL if there are errors.
    */
   command error_t Transport.receive(pack* package) {
+    pack msg;
+		uint8_t temp;
+		socket_t fd;
+		tcp_packet* recievedTcp;
+		socket_store_t socket;
+		error_t check = FAIL;
 
+    msg = *package;
+		recievedTcp = (tcp_packet*)package->payload;
+    msg.TTL--;
+
+    //switch cases to check what is received
+    switch(recievedTcp->flag) {
+      case 1://SYN
+      case 2://ACK
+      case 3://FIN
+      case 4://RST
+    }
   }
 
   /**
@@ -218,8 +235,21 @@ implementation {
    * @return error_t - returns SUCCESS if you are able change the state
    *   to listen else FAIL.
    */
+   //finishhhh
   command error_t Transport.listen(socket_t fd) {
+    socket_store_t socket;
+		dbg(GENERAL_CHANNEL, "\tRunning Transport.listen()\n");
 
+    //Check hashmap of sockets if fd is in
+    if (call sockets.contains(fd)) {
+      socket = call sockets.get(fd);
+			call sockets.remove(fd);
+      socket.state = LISTEN;
+      call sockets.insert(fd, socket);
+      return SUCCESS;
+    }
+
+    return FAIL;
   }
 
   command socket_t Transport.findSocket(uint16_t dest, uint8_t srcPort, uint8_t destPort){
