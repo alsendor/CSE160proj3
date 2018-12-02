@@ -224,8 +224,6 @@ implementation {
 
 
     }
-
-      }
       else return FAIL;
 
       return SUCCESS;
