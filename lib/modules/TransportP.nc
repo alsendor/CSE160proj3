@@ -247,8 +247,6 @@ implementation {
     return SUCCESS;
     }
 
-
-
   /**
    * A hard close, which is not graceful. This portion is optional.
    * @param
