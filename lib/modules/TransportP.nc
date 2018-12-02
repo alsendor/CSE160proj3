@@ -209,7 +209,9 @@ implementation {
    * @return socket_t - returns SUCCESS if you are able to attempt
    *    a closure with the fd passed, else return FAIL.
    */
-  command error_t Transport.close(socket_t fd) {
+
+   //Close connection by removing socket from the list of active connections
+  command error_t Transport.close(socket_t fd, uint16_t seq) {
     socket_store_t socket;
     pack msg;
     TCPpack* tcp_msg;
@@ -218,18 +220,34 @@ implementation {
     if(call sockets.contains(fd)) {
       socket = call sockets.get(fd);
       dbg(GENERAL_CHANNEL, "Here 1\n");
-      tcp_msg->destPort = socket.destPort;
+      tcp_msg->destPort = socket.dest.port;
       dbg(GENERAL_CHANNEL, "Here 1\n");
       tcp_msg->seq = seq;
-
-
+      tcp_msg->flag = RST;
+      tcp_msg->srcPort = socket.src;
+      dbg(GENERAL_CHANNEL, "Here 1\n");
+      tcp_msg->numBytes = 0;
+      dbg(GENERAL_CHANNEL, "Here 2\n");
+      msg.dest = socket.dest.address;
+      msg.src = TOS_NODE_ID;
+      msg.seq = seq;
+      msg.TTL = 15;
+      msg.protocol = PROTOCOL_TCP;
+      dbg(GENERAL_CHANNEL, "Here 3\n");
+      memcpy(msg.payload, (void*)tcp_msg, TCP_MAX_PAYLOAD_SIZE);
+      call sockets.remove(fd);
+      call sockets.insert(fd, socket);
+      dbg(GENERAL_CHANNEL, "Here 4\n");
+      call Transport.send(&socket, msg);
+    }
+    else {
+      dbg(GENERAL_CHANNEL, "CANNOT CLOSE");
+      return FAIL;
+    }
+    return SUCCESS;
     }
 
-      }
-      else return FAIL;
 
-      return SUCCESS;
-  }
 
   /**
    * A hard close, which is not graceful. This portion is optional.
