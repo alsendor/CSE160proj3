@@ -20,7 +20,7 @@ implementation {
     components Node;
     components new AMReceiverC(AM_PACK) as GeneralReceive;
     components new FloodingC(AM_FLOODING);
-    components new SimpleSend(AM_PACK);
+    components new SimpleSendC(AM_PACK);
     components new TimerMilliC() as acceptTimerC;
     components new TimerMilliC() as writeTimerC;
 
@@ -48,7 +48,7 @@ implementation {
     Node.CommandHandler -> CommandHandlerC;
 
     //components FloodingC;
-    Node.Flooding -> FloodingC;
+    Node.Flooding -> FloodingC.SimpleSend;
 
     components NeighborDiscoveryC;
     Node.NeighborDiscovery -> NeighborDiscoveryC;
