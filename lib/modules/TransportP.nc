@@ -211,11 +211,19 @@ implementation {
    */
   command error_t Transport.close(socket_t fd) {
     socket_store_t socket;
-		 pack msg;
-		 TCPpack* tcp_msg;
+    pack msg;
+    TCPpack* tcp_msg;
+    dbg(GENERAL_CHANNEL, "Transport Close\n");
 
-      dbg(GENERAL_CHANNEL, "Running Transport.Close\n");
-      if (call sockets.contains()) {
+    if(call sockets.contains(fd)) {
+      socket = call sockets.get(fd);
+      dbg(GENERAL_CHANNEL, "Here 1\n");
+      tcp_msg->destPort = socket.destPort;
+      dbg(GENERAL_CHANNEL, "Here 1\n");
+      tcp_msg->seq = seq;
+
+
+    }
 
       }
       else return FAIL;
@@ -233,7 +241,7 @@ implementation {
    *    a closure with the fd passed, else return FAIL.
    */
   command error_t Transport.release(socket_t fd) {
-
+    return SUCCESS;
   }
 
   /**
