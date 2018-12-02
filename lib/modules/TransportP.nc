@@ -216,7 +216,7 @@ implementation {
 
       dbg(GENERAL_CHANNEL, "Running Transport.Close\n");
       if (call sockets.contains()) {
-        
+
       }
       else return FAIL;
 
