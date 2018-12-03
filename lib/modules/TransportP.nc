@@ -159,7 +159,14 @@ implementation {
    *    from the pass buffer. This may be shorter then bufflen
    */
   command uint16_t Transport.write(socket_t fd, uint8_t *buff, uint16_t bufflen) {
+    uint8_t i;
+		uint16_t freeSpace, position;
+		socket_store_t socket;
 
+		dbg(GENERAL_CHANNEL, "\tRunning Transport.write()\n");
+
+    if(call sockets.contains(fd))
+			socket = call sockets.get(fd);
   }
 
   /**
@@ -207,6 +214,17 @@ implementation {
    *    from the pass buffer. This may be shorter then bufflen
    */
   command uint16_t Transport.read(socket_t fd, uint8_t *buff, uint16_t bufflen) {
+    uint16_t i, pos, len;
+		socket_store_t socket;
+
+    dbg(GENERAL_CHANNEL, "\tRunning Transport.read()\n");
+
+    if (!call sockets.contains(fd)) {
+			dbg(GENERAL_CHANNEL, "\t - sockets.contains(fd:  %d) not found!\n", fd);
+			return 0;
+		}
+    else socket = call sockets.get(fd);
+
 
   }
 
@@ -322,7 +340,7 @@ implementation {
    *    a closure with the fd passed, else return FAIL.
    */
   command error_t Transport.release(socket_t fd) {
-    return SUCCESS;
+    return FAIL;
   }
 
   /**
