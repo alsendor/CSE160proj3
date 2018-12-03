@@ -24,7 +24,8 @@
 
 implementation {
   uint16_t RTT = 12000;
-  uint16_t fdKeys = 0;
+  uint16_t fdKeys = 0; //number of fdKeys we currently have
+  uint8_t numConnected = 0; //number of connected sockets
 
   command void Transport.makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
 		tcp_packet* tcpp = (tcp_packet*) payload;
@@ -115,7 +116,31 @@ implementation {
    *    if not return a null socket.
    */
   command socket_t Transport.accept(socket_t fd) {
+    socket_store_t localSocket;
+		dbg(GENERAL_CHANNEL, "\tRunning Transport.accept(%d)\n", fd);
+    if (!call sockets.contains(fd)) {
+			dbg(GENERAL_CHANNEL, "sockets.contains(fd:  %d) returns false\n", fd);
+			return (socket_t)NULL;
+		}
 
+    localSocket = call sockets.get(fd);
+    if (localSocket.state == LISTEN && numConnected < 10) {
+
+			// Keeping track of used sockets and my destination address, udating state
+			numConnected++;
+			localSocket.dest.addr = TOS_NODE_ID;
+			localSocket.state = SYN_RCVD;
+
+			dbg (GENERAL_CHANNEL, "\t\t\t     -- localSocket.state: %d localSocket.dest.addr: %d \n", localSocket.state, localSocket.dest.addr);
+
+			// Clearing old and  inserting the modified socket back
+			call sockets.remove(fd);
+			call sockets.insert(fd, localSocket);
+			dbg(GENERAL_CHANNEL, "\t\t\t     -- returning fd: %d\n", fd);
+			return fd;
+		}
+
+    return (socket_t) null;
   }
 
   /**
