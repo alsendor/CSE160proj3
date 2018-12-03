@@ -199,7 +199,7 @@ implementation {
         socket.sendBuff[position] = buff[i];
       }
 
-    //Increment last written position 
+    //Increment last written position
     socket.lastWritten += position;
 
   }
@@ -227,6 +227,27 @@ implementation {
     //switch cases to check what is received
     switch(recievedTcp->flag) {
       case 1://SYN
+            dbg(GENERAL_CHANNEL, "\tTransport.recieve: SYN recieved! TTL: %u\n", msg.TTL);
+
+            //Reply with SYN+ACK
+            recievedTcp->flag = ACK;
+            dbg(GENERAL_CHANNEL, "\t Set Flag to SYN+ACK\n");
+
+            recievedTcp->seq++;
+            //recievedTcp->advertisedWindow = 1;
+
+            temp = recievedTcp->destPort;
+            recievedTcp->destPort = recievedTcp->srcPort;
+            recievedTcp->srcPort = temp;
+
+            temp = msg.dest;
+            msg.dest = msg.src;
+            msg.src = temp;
+            msg.seq++;
+            msg.TTL = (uint8_t)15;
+            msg.protocol = PROTOCOL_TCP;
+            memcpy(msg.payload, recievedTcp, TCP_MAX_PAYLOAD_SIZE);
+
       case 2://ACK
       case 3://FIN
       case 4://RST
