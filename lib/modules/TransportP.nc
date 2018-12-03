@@ -23,6 +23,8 @@
  }
 
 implementation {
+  uint16_t RTT = 12000;
+  uint16_t fdKeys = 0;
 
   command void Transport.makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
 		tcp_packet* tcpp = (tcp_packet*) payload;
@@ -43,7 +45,31 @@ implementation {
    *    a socket then return a NULL socket_t.
    */
   command socket_t Transport.socket() {
+    int i;
+		socket_store_t newSocket;
+		dbg(GENERAL_CHANNEL, "\tRunning Transport.socket()\n");
 
+    //Check the number of socket keys
+    fdKeys++;
+    if (fdKeys < 10) {
+      newSocket.state = CLOSED;
+			newSocket.lastWritten = 0;
+			newSocket.lastAck = 255;
+			newSocket.lastSent = 0;
+			newSocket.lastRead = 0;
+			newSocket.lastRcvd = 0;
+			newSocket.nextExpected = 0;
+			newSocket.RTT = RTT;
+			call sockets.insert(fdKeys, newSocket);
+			return (socket_t)fdKeys;
+    }
+    else { //loop through sockets list
+      for(i = 0; i < 10; i++)
+				if(!call sockets.contains(i))
+					return (socket_t)i;
+    }
+
+    return (socket_t)NULL;
   }
 
   /**
