@@ -27,6 +27,7 @@ implementation {
   uint16_t fdKeys = 0; //number of fdKeys we currently have
   uint8_t numConnected = 0; //number of connected sockets
 
+
   command void Transport.makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
 		tcp_packet* tcpp = (tcp_packet*) payload;
 
@@ -104,9 +105,12 @@ implementation {
       newSocket.src.port = addr->port;
       newSocket.src.addr = addr->addr;
 
+      dbg(GENERAL_CHANNEL, "\t -- Successful Bind\n");
+      //Insert socket back into hashtable
+      call sockets.insert(fd, newSocket);
       return SUCCESS;
     }
-
+    dbg(GENERAL_CHANNEL, "\t -- Failed Bind\n");
     return FAIL;
   }
 
@@ -138,12 +142,12 @@ implementation {
 			localSocket.dest.addr = TOS_NODE_ID;
 			localSocket.state = SYN_RCVD;
 
-			dbg (GENERAL_CHANNEL, "\t\t\t     -- localSocket.state: %d localSocket.dest.addr: %d \n", localSocket.state, localSocket.dest.addr);
+			dbg (GENERAL_CHANNEL, "\t -- localSocket.state: %d localSocket.dest.addr: %d \n", localSocket.state, localSocket.dest.addr);
 
 			// Clearing old and  inserting the modified socket back
 			call sockets.remove(fd);
 			call sockets.insert(fd, localSocket);
-			dbg(GENERAL_CHANNEL, "\t\t\t     -- returning fd: %d\n", fd);
+			dbg(GENERAL_CHANNEL, "\t -- returning fd: %d\n", fd);
 			return fd;
 		}
 
@@ -174,6 +178,30 @@ implementation {
 
     if(call sockets.contains(fd))
 			socket = call sockets.get(fd);
+
+      //Determine how much data we can write, buffer length or write length
+      if(socket.lastWritten == socket.lastAck){
+        freeSpace = SOCKET_BUFFER_SIZE - 1;
+      } else if(socket.lastWritten > socket.lastAck){
+        freeSpace = SOCKET_BUFFER_SIZE - (socket.lastWritten - socket.lastAck) - 1;
+      } else if(socket.lastWritten < socket.lastAck){
+        freeSpace = socket.lastAck - socket.lastWritten - 1;
+      } if(freeSpace > bufflen){
+        bufflen = freeSpace;
+      } if(bufflen == 0){
+        dbg(GENERAL_CHANNEL, "\t -- Buffer is Full\n");
+        return 0;
+      }
+
+      //Iterate through to wite in sendBuff array
+      for(i = 0; i < freeSpace; i++) {
+        position = (socket.lastWritten + i + 1) % SOCKET_BUFFER_SIZE;
+        socket.sendBuff[position] = buff[i];
+      }
+
+    //Increment last written position 
+    socket.lastWritten += position;
+
   }
 
   /**
