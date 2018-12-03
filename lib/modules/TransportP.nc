@@ -274,8 +274,14 @@ implementation {
         temp = msg.dest;
 				msg.dest = msg.src;
 				msg.src = temp;
-
-        
+        dbg(GENERAL_CHANNEL, "\t\t recievedTcp->srcPort: %u, msg.src: %u, recievedTcp->destPort: %u msg.dest: %u\n",recievedTcp->srcPort, msg.src, recievedTcp->destPort, msg.dest);
+        fd = call Transport.findSocket(recievedTcp->srcPort, recievedTcp->destPort, msg.dest);
+        socket = call sockets.get(fd);
+        socket.state = ESTABLISHED;
+        call sockets.remove(fd);
+				call sockets.insert(fd, socket);
+        return SUCCESS;
+				break;
 
       case 3://FIN
       case 4://RST
