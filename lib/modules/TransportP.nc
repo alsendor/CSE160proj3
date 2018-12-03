@@ -284,8 +284,22 @@ implementation {
 				break;
 
       case 3://FIN
+        dbg(GENERAL_CHANNEL, "\tTransport.receive() default flag FIN\n");
+        call Transport.close(fd, seq);
+        break;
+
       case 4://RST
+        dbg(GENERAL_CHANNEL, "\tTransport.receive() default flag RST\n");
+				fd = call Transport.findSocket(recievedTcp->destPort, recievedTcp->srcPort, msg.src);
+				socket = call sockets.get(fd);
+				call sockets.remove(fd);
+				call sockets.insert(fd, socket);
+				break;
+
+      default:
+				return FAIL;
     }
+    return check;
   }
 
   /**
