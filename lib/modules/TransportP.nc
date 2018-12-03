@@ -37,6 +37,13 @@ implementation {
 		memcpy(Package->payload, payload, TCP_MAX_PAYLOAD_SIZE);
 	}
 
+  command socket_store_t Transport.getSocket(socket_t fd) {
+    if(call sockets.contains(fd))
+    return (call sockets.get(fd));
+  else
+    return (socket_store_t) NULL;
+}
+
   /**
    * Get a socket if there is one available.
    * @Side Client/Server
