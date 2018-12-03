@@ -263,6 +263,20 @@ implementation {
 				    break;
 
       case 2://ACK
+        dbg(GENERAL_CHANNEL, "\tTransport.receive() default flag ACK\n");
+
+        //swap destPort and srcPort
+        temp = recievedTcp->destPort;
+				recievedTcp->destPort = recievedTcp->srcPort;
+				recievedTcp->srcPort = temp;
+
+        //swap dest and src
+        temp = msg.dest;
+				msg.dest = msg.src;
+				msg.src = temp;
+
+        
+
       case 3://FIN
       case 4://RST
     }
