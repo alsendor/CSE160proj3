@@ -42,7 +42,7 @@ implementation {
     return (call sockets.get(fd));
   else
     return (socket_store_t) NULL;
-}
+  }
 
   /**
    * Get a socket if there is one available.
