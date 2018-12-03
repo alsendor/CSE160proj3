@@ -59,7 +59,21 @@ implementation {
    *       if you were unable to bind.
    */
   command error_t Transport.bind(socket_t fd, socket_addr_t *addr) {
+    socket_store_t newSocket;
+		dbg(GENERAL_CHANNEL, "\tRunning Transport.bind()\n");
 
+    if (call sockets.contains(fd)) {
+      newSocket = call sockets.get(fd);
+      call sockets.remove(fd);
+      newSocket.dest.port = ROOT_SOCKET_PORT;
+      newSocket.dest.addr = ROOT_SOCKET_ADDR;
+      newSocket.src.port = addr->port;
+      newSocket.src.addr = addr->addr;
+
+      return SUCCESS;
+    }
+
+    return FAIL;
   }
 
   /**
