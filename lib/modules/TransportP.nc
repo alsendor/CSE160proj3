@@ -223,15 +223,48 @@ implementation {
   command uint16_t Transport.read(socket_t fd, uint8_t *buff, uint16_t bufflen) {
     uint16_t i, pos, len;
 		socket_store_t socket;
-
     dbg(GENERAL_CHANNEL, "\tRunning Transport.read()\n");
 
     if (!call sockets.contains(fd)) {
-			dbg(GENERAL_CHANNEL, "\t - sockets.contains(fd:  %d) not found!\n", fd);
+			dbg(GENERAL_CHANNEL, "\t -- sockets.contains(fd:  %d) not found!\n", fd);
 			return 0;
 		}
-    else socket = call sockets.get(fd);
+    else {
+      socket = call sockets.get(fd);
+      dbg(GENERAL_CHANNEL, "\t -- socket.contains(fd: %d) found!\n", fd);
+      }
 
+      //Find our length of read space in buffer
+      if(socket.lastRcvd >= socket.lastRead){
+        len = socket.lastRcvd - socket.lastRead
+      } else if(socket.lastRcvd < socket.lastRead) {
+        len = SOCKET_BUFFER_SIZE - socket.lastRead + socket.lastRcvd
+      }
+      dbg(GENERAL_CHANNEL, "\t -- Read Space Length: %d\n", len);
+
+      //Min value from length and buffer length
+      if(len > bufflen){
+        len = bufflen;
+      }
+      dbg(GENERAL_CHANNEL, "\t -- Min Space Between Length and Bufferlen: %d\n", len);
+
+      //Space gap in buffer ready to be read
+      if(socket.nextExpected <= socket.lastRcvd + 1){
+        len = socket.nextExpected - socket.lastRead;
+      }
+      dbg(GENERAL_CHANNEL, "\t -- Length Ready To Be Read: %d\n", len);
+
+      //Iterate through length to know how long we can read
+      for(i = 0; i < len; i++)
+      {
+        pos = (socket.lastRead + i) % SOCKET_BUFFER_SIZE;
+        buff[i] = socket.rcvdBuff[pos];
+      }
+
+      socket.lastRead += len;
+      call sockets.insert(fd, socket);
+      dbg(GENERAL_CHANNEL, "\t -- Length: %d\n", len);
+      return len;
 
   }
 
