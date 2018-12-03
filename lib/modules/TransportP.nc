@@ -248,6 +248,20 @@ implementation {
             msg.protocol = PROTOCOL_TCP;
             memcpy(msg.payload, recievedTcp, TCP_MAX_PAYLOAD_SIZE);
 
+            fd = call Transport.findSocket(recievedTcp->srcPort, ROOT_SOCKET_PORT, ROOT_SOCKET_PORT);
+            socket = call sockets.get(fd);
+
+            socket.dest.port = recievedTcp->destPort;
+				    socket.dest.addr = msg.dest;
+				    socket.state = SYN_RCVD;
+
+            call sockets.remove(fd);
+				    call sockets.insert(fd, socket);
+            dbg(GENERAL_CHANNEL, "\tsocket.src: %u socket.dest.port: %u\n", socket.src, socket.dest.port);
+            call Transport.send(&socket, msg);
+				    return  SUCCESS;
+				    break;
+
       case 2://ACK
       case 3://FIN
       case 4://RST
