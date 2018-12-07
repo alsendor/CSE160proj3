@@ -597,7 +597,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
       //Update hashtable
       call sockets.insert(fd, newConnection);
-      return SUCCESS
+      return SUCCESS;
     }
     else return FAIL;
   }
