@@ -241,7 +241,7 @@ implementation {
           else if(recievedMsg->dest == TOS_NODE_ID && recievedMsg->protocol == PROTOCOL_TCP){
             dbg(GENERAL_CHANNEL, "Recieved a TCP Pack\n");
             logPacket(&sendPackage);
-            call Transport.recieve(recievedMsg);
+            call Transport.receive(recievedMsg);
             return msg;
           }
           //TCP pack reaches incorrect dest
