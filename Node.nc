@@ -141,8 +141,9 @@ implementation {
 
 //initialize Timer for writing data
   event void writeTimer.fired(){
-    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
     socket_store_t sockWrite;
+    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
+
     if(call Transport.isValidSocket(fd)){
       dbg(GENERAL_CHANNEL, "\t\t\t    -- Socket is valid!!! \n");
       sockWrite = call Transport.getSocket(fd);
