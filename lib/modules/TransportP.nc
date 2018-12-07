@@ -46,7 +46,36 @@ implementation {
 		call Sendor.send(sendMessage, firstNeighbor);
 	}
 
+//TCPpack timeout timer
+event void timeoutTimer.fired() {
+		TCPpack* payload;
+		payload = (TCPpack*)sendMessage.payload;
+		dbg(GENERAL_CHANNEL, "\n\tPacket %u timed out! Resending to %d\n", tcpSeq, firstNeighbor);
+		call Sendor.send(sendMessage, firstNeighbor);
+		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
+		if(sentData != transfer)
+			call TimedOut.startTimer(12000);
+	}
 
+//Passing the sequence number
+command void Transport.passSeq(uint16_t* seq) {
+		IPseq = seq;
+	}
+//Passng the neighbor list
+  command void Transport.passNeighborsList(uint8_t* neighbors[]) {
+    dbg(GENERAL_CHANNEL, "Passing Neighbor List\n");
+  		memcpy(NeighborList, (void*)neighbors, sizeof(neighbors));
+      //iterate through neighborlist adding in all neighbors
+  		for(int i = 1; i < 20; i++) {
+  			if(NeighborList[i] > 0) {
+  				dbg(GENERAL_CHANNEL, "%d's Neighbor is: %d\n", TOS_NODE_ID, i);
+  				firstNeighbor = i;
+  			}
+  		}
+  		dbg(GENERAL_CHANNEL, "firstNeighbor: %d\n", firstNeighbor);
+  	}
+
+//Create the makepack
   command void Transport.makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
 		TCPpack* tcpp = (TCPpack*) payload;
 
@@ -57,11 +86,41 @@ implementation {
 		memcpy(Package->payload, payload, TCP_MAX_PAYLOAD_SIZE);
 	}
 
+//Creating the TCPpack
+command void Transport.makeTCPPack(TCPpack* TCPheader, uint8_t destPort, uint8_t srcPort, uint16_t seq, uint16_t ack, uint8_t flag, uint8_t advertisedWindow, uint8_t numBytes, uint8_t* payload) {
+    dbg(GENERAL_CHANNEL, "\t\t Making the TCP Pack\n");
+  	TCPheader->destPort = destPort;
+		TCPheader->srcPort = srcPort;
+		TCPheader->seq = seq;
+		TCPheader->ack = ack;
+		TCPheader->flag = flag;
+		TCPheader->advertisedWindow = advertisedWindow;
+		dbg(GENERAL_CHANNEL, "\t\tSize of TCPheader->payload: %u, payload: %u, numBytes: %u\n", sizeof(TCPheader->payload), sizeof(payload), numBytes);
+	 	memcpy(TCPheader->payload, payload, sizeof(payload));
+	}
+
+//Creating the SYNpack
+command TCPpack* Transport.makeSynPack(TCPpack* TCPheader, uint8_t destPort, uint8_t srcPort, uint16_t seq) {
+		TCPheader->destPort = destPort;
+		TCPheader->srcPort = srcPort;
+    TCPheader->flag = SYN;
+		TCPheader->seq = seq;
+		dbg(GENERAL_CHANNEL, "\t\tMake SynPack values destPort: %d srcPort: %d seq: %d\n", TCPheader->destPort, TCPheader->srcPort, TCPheader->seq);
+		return TCPheader;
+	}
+
+//Creating the ACKpack for reply
+  command void Transport.makeAckPack(TCPpack* TCPheader, uint8_t destPort, uint8_t srcPort, uint16_t seq, uint8_t flag, uint8_t advertisedWindow) {
+  		TCPheader->destPort = destPort;
+  		TCPheader->srcPort = srcPort;
+      TCPheader->flag = flag;
+  		TCPheader->seq = seq;
+  		TCPheader->advertisedWindow = advertisedWindow;
+  	}
+
+//Method to get socket file descriptor
   command socket_store_t Transport.getSocket(socket_t fd) {
-    if(call sockets.contains(fd))
     return (call sockets.get(fd));
-  else
-    return (socket_store_t) NULL;
   }
 
   /**
