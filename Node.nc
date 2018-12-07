@@ -528,7 +528,8 @@ void insert(uint8_t dest, uint8_t cost, uint8_t nextHop){
 
 //send DV table to neighbors
 void sendTableToNeighbors(){
-  for(int i = 1; i < NeighborListSize; i++){
+  int i;
+  for(i = 1; i < NeighborListSize; i++){
     if(NeighborList[i] > 0){
       //i is the node's ID
       splitHorizon((uint8_t) i);
@@ -538,12 +539,12 @@ void sendTableToNeighbors(){
 
 //Merge routes, creating an updated DV table
 bool mergeRoute(uint8_t* newRoute, uint8_t src){
-  int cost, node, nextHop;
+  int cost, node, nextHop, i, j;
   bool alteredRoute = FALSE;
 
   //Two loops to iterate through routing[] and newRoute. Save values into made variables.
-  for(int i = 0; i < 20; i++){
-    for(int j = 0; j < 7; j++){
+  for(i = 0; i < 20; i++){
+    for(j = 0; j < 7; j++){
       node = *(newRoute + (j * 3));
       cost = *(newRoute + (j * 3) + 1);
       nextHop = *(newRoute + (j * 3) + 2);
@@ -564,6 +565,7 @@ bool mergeRoute(uint8_t* newRoute, uint8_t src){
 
 //When sending DV table to neighbors, our nextHop is the direct neighbor we are sending this to
   void splitHorizon(uint8_t nextHop){
+    int i;
     uint8_t* poisonTable = NULL;
     uint8_t* startOfPoison;
     //Allocating size on heap but returning pointers
@@ -573,14 +575,14 @@ bool mergeRoute(uint8_t* newRoute, uint8_t src){
     memcpy(poisonTable, &routing, sizeof(routing));
     startOfPoison = poisonTable;
     //Insert poison to table (MAX_HOP)
-    for(int i = 0; i < 20; i++){
+    for(i = 0; i < 20; i++){
       if(nextHop == i){
         //Poison reverse makes the new path cost infinity
         *(poisonTable + (i * 3) + 1) = 25;
       }
     }
     //payload is too large, so we send in chunks starting from 0 to send first table
-    for(int i = 0; i < 20; i++){
+    for(i = 0; i < 20; i++){
       //send the next portion of the table to the next node
       if(i % 7 == 0){
         nodeSeq++;
@@ -593,8 +595,9 @@ bool mergeRoute(uint8_t* newRoute, uint8_t src){
 
 //Search route table for next Hop
 uint8_t findNextHop(uint8_t dest){
+  int i;
   uint8_t nextHop;
-  for(int i = 0; i <= poolSize; i++){
+  for(i = 0; i <= poolSize; i++){
     if(routing[i][0] == dest){
       nextHop = routing[i][2];
       return nextHop;
