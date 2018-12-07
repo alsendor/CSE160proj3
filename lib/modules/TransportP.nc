@@ -18,14 +18,33 @@
 
  module TransportP {
      provides interface Transport;
-
+     uses interface Random as Random;
+     uses interface SimpleSend as Sendor;
      uses interface Hashmap<socket_store_t> as sockets;
+     uses interface Timer<TMilli> as timeoutTimer;
+     uses interface Timer<TMilli> as ackTimer;
  }
 
 implementation {
   uint16_t RTT = 12000;
   uint16_t fdKeys = 0; //number of fdKeys we currently have
   uint8_t numConnected = 0; //number of connected sockets
+  uint16_t tcpSeq = 0;
+  uint16_t* IPseq = 0;
+  uint8_t NeighborList[19];
+  uint8_t transfer;
+  uint8_t dataSent = 0;
+  uint8_t firstNeighbor = 0;
+  bool send = TRUE;
+  pack sendMessage;
+
+//timer for ACK
+  event void ackTimer.fired() {
+		TCPpack* payload;
+		payload = (TCPpack*)sendMessage.payload;
+		dbg(GENERAL_CHANNEL, "\n\tAck %u timed out! Resending!!!\n", payload->seq);
+		call Sendor.send(sendMessage, firstNeighbor);
+	}
 
 
   command void Transport.makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
@@ -151,7 +170,7 @@ implementation {
 			return fd;
 		}
 
-    return (socket_t) null;
+    return (socket_t) NULL;
   }
 
   /**

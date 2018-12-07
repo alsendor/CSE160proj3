@@ -21,8 +21,8 @@ typedef nx_struct TCPpack{
 enum{
   SYN = 1,
   ACK = 2,
-  FIN = 3,
-  RST= 4
+  FIN = 4,
+  RST= 8
 };
 
 #endif

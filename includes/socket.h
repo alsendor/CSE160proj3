@@ -9,11 +9,11 @@ enum{
 };
 
 enum socket_state{
-    CLOSED,
-    LISTEN,
-    ESTABLISHED,
-    SYN_SENT,
-    SYN_RCVD,
+    CLOSED = 0,
+    LISTEN = 1,
+    ESTABLISHED = 3,
+    SYN_SENT = 4,
+    SYN_RCVD = 5,
 };
 
 
@@ -22,7 +22,7 @@ typedef uint8_t socket_port_t;
 
 // socket_addr_t is a simplified version of an IP connection.
 typedef nx_struct socket_addr_t{
-    nx_socket_port_t port;
+    nx_uint16_t port;
     nx_uint16_t addr;
 }socket_addr_t;
 
@@ -30,11 +30,11 @@ typedef nx_struct socket_addr_t{
 // File descripter id. Each id is associated with a socket_store_t
 typedef uint8_t socket_t;
 
-// State of a socket. 
+// State of a socket.
 typedef struct socket_store_t{
     uint8_t flag;
     enum socket_state state;
-    socket_port_t src;
+    uint16_t src;
     socket_addr_t dest;
 
     // This is the sender portion.
