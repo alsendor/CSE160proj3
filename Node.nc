@@ -44,6 +44,46 @@ module Node {
 
 implementation {
 
+  uint8_t MAX_HOP = 18;
+  uint8_t MAX_NEIGHBOR_TTL = 20;
+  uint8_t NeighborListSize = 19;
+  uint8_t NeighborList[19];
+  uint8_t routing[255][3];
+  uint8_t transfer = 0;
+  uint8_t numRoutes = 0;
+  uint8_t poolSize = 9;
+  uint16_t nodeSeq = 0;
+
+  socket_t fd;
+  bool fired = false;
+  bool initialized = false;
+
+  pack sendPackage;
+
+//Pack functions
+  void initialize();
+  void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t Protocol, uint16_t seq, uint8_t *payload, uint8_t length);
+  void insert(uint8_t dest, uint8_t cost, uint8_t nextHop);
+  void logPacket(pack* payload);
+  bool hasSeen(pack* payload);
+
+//Neighbors functions
+  void scanNeighbors();
+  void addNeighbor(uint8_t Neighbor);
+  bool destIsNeighbor(pack* recievedMsg);
+  void relayToNeighbor(pack* recievedMsg);
+  void reduceNeighborTTL();
+  void sendTableToNeighbors();
+
+//Routing functions
+  uint8_t findNextHop(uint8_t dest);
+  bool mergeRoute(uint8_t* newRoute, uint8_t src);
+  void splitHorizon(uint8_t nextHop);
+  
+
+
+
+
     event void Boot.booted() {
         call AMControl.start();
         dbg(GENERAL_CHANNEL, "Booted\n");
