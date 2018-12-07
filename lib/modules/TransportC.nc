@@ -10,7 +10,7 @@ implementation {
   components TransportP;
   Transport = TransportP;
 
-  components new Hashmap(socket_store_t, 10);
+  components new HashmapC(socket_store_t, 10);
   TransportP.sockets -> HashmapC;
 
   components RandomC as Random;
