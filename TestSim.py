@@ -126,8 +126,8 @@ class TestSim:
     def ping(self, source, dest, msg):
         self.sendCMD(self.CMD_PING, source, "{0}{1}".format(chr(dest),msg));
 
-    def printMessage(self, source, msg):
-        self.sendCMD(self.CMD_PRINT_MESSAGE, source, msg)
+    #def printMessage(self, source, msg):
+        #self.sendCMD(self.CMD_PRINT_MESSAGE, source, msg)
 
     def neighborDMP(self, destination):
         self.sendCMD(self.CMD_NEIGHBOR_DUMP, destination, "neighbor command");
@@ -135,14 +135,31 @@ class TestSim:
     def routeDMP(self, destination):
         self.sendCMD(self.CMD_ROUTE_DUMP, destination, "routing command");
 
+    def newServer(self, target, port):
+        self.sendCMD(self.CMD_TEST_SERVER, target, "{0}".format(chr(port)));
+
+    def newClient(self, target, dest, srcPort, destPort, num):
+        self.sendCMD(self.CMD_TEST_CLIENT,  target,  "{0}{1}{2}{3}{4}".format(chr(dest), chr(srcPort), chr(destPort), chr(num & 0xFF), chr((num >> 8) & 0xFF)));
+
+    def clientClose(self, target, dest, srcPort, destPort):
+        self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
+
     def addChannel(self, channelName, out=sys.stdout):
         print 'Adding Channel', channelName;
         self.t.addChannel(channelName, out);
 
-    def cmdTestServer(self, address, port):
-        def cmdTestClient(self, dest, srcPort, destPort, transfer):
-            def cmdClientClose(self, client_addr, dest, srcPort, destPort):
-                self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
+    def setAppServer(self):
+        print 'Set App Server';
+        self.sendCMD(self.CMD_SET_APP_SERVER, 1, "{0}".format(chr(41)));
+
+    def setAppClient(self, target, port):
+        print 'Set App Client';
+        self.sendCMD(self.CMD_SET_APP_CLIENT, target, "{0}".format(chr(port)));
+
+    #def cmdTestServer(self, address, port):
+        #def cmdTestClient(self, dest, srcPort, destPort, transfer):
+        #    def cmdClientClose(self, client_addr, dest, srcPort, destPort):
+            #    self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
 
 def main():
     s = TestSim();
