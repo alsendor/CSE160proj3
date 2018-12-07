@@ -120,8 +120,8 @@ implementation {
 //initialize timer to listen for sockets
   event void listenTimer.fired(){
     socket_store_t sockListen;
-    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
     int length;
+    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
 
     fd = call Transport.accept(fd);
 
