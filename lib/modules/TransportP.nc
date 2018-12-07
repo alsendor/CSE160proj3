@@ -29,7 +29,7 @@ implementation {
 
 
   command void Transport.makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length) {
-		tcp_packet* tcpp = (tcp_packet*) payload;
+		TCPpack* tcpp = (TCPpack*) payload;
 
 		Package->src = src;
 		Package->dest = dest;
@@ -216,12 +216,12 @@ implementation {
     pack msg;
 		uint8_t temp;
 		socket_t fd;
-		tcp_packet* recievedTcp;
+		TCPpack* recievedTcp;
 		socket_store_t socket;
 		error_t check = FAIL;
 
     msg = *package;
-		recievedTcp = (tcp_packet*)package->payload;
+		recievedTcp = (TCPpack*)package->payload;
     msg.TTL--;
 
     //switch cases to check what is received

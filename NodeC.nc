@@ -37,7 +37,7 @@ implementation {
     components new ListC(pack, 64) as packLogsC;
     Node.packLogs -> packLogsC
 
-    components new SimpleSend(AM_PACK);
+    components new SimpleSendC(AM_PACK);
     Node.Sendor -> SimpleSendC;
 
     components TransportC;
