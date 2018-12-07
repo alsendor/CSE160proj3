@@ -104,7 +104,7 @@ implementation {
 
     if(fired = FALSE){
       call tableUpdateTimer.startPeriodic(t0, tI);
-      fired = true;
+      fired = TRUE;
     }
   }
 
@@ -113,7 +113,7 @@ implementation {
     dbg(GENERAL_CHANNEL, "tableUpdateTimer.fired() {\n");
     if(initialized == FALSE){
       initialize();
-      initialized = true;
+      initialized = TRUE;
     } else sendTableToNeighbors();
   }
 
@@ -160,7 +160,7 @@ implementation {
 //initialize time out timer
   event void timeoutTimer.fired(){
 
-    dbg(GENERAL_CHANNEL, "TimedOut.fired() -- No ACK received \n");
+    dbg(GENERAL_CHANNEL, "timeoutTimer.fired() -- No ACK received \n");
   }
 
 //Radios on
@@ -222,7 +222,7 @@ implementation {
           else if(recievedMsg->dest == TOS_NODE_ID && recievedMsg->protocol == PROTOCOL_DV){
             dbg(GENERAL_CHANNEL, "Merge Route!!!\n");
             alteredRoute = mergeRoute((uint8_t*)recievedMsg->payload, (uint8_t)recievedMsg->src);
-            if(alteredRoute = true){
+            if(alteredRoute = TRUE){
               sendTableToNeighbors();
             }
             return msg;
