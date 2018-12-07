@@ -227,7 +227,7 @@ implementation {
             }
             return msg;
           }
-          //If packet reaches incorrect dest, relay to neighbords
+          //If packet reaches incorrect dest, relay to neighbors
           else if(recievedMsg->dest != AM_BROADCAST_ADDR && recievedMsg->dest != TOS_NODE_ID){
             dbg(GENERAL_CHANNEL, "Incorrect Destination, Relaying!!!\n");
             recievedMsg->TTL--;
@@ -270,9 +270,17 @@ implementation {
         //call DistanceVectorRouting.ping(destination, payload);
         //call Flooding.ping(destination, payload);
     }
-
+//Print neighbors
     event void CommandHandler.printNeighbors() {
-            call NeighborDiscovery.printNeighbors();
+      int count = 0;
+      dbg(NEIGHBOR_CHANNEL, "\t%d's Neighbors\n", TOS_NODE_ID);
+      for(int i = 1; i < NeighborListSize; i++){
+        if(NeighborList[i] > 0){
+          count++;
+        }
+      }
+      if(count == 0)
+            dbg(GENERAL_CHANNEL, "Neighbors List is Empty\n");
     }
 
     event void CommandHandler.printRouteTable() {
