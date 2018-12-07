@@ -581,7 +581,9 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
     //Check if the socket is in the socket hashmap
     if (call sockets.contains(fd)) {
+      dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
       newConnection = call sockets.get(fd);
+      dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
 			call sockets.remove(fd);
 
       //Set destination port
