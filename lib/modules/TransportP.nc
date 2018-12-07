@@ -35,6 +35,7 @@ implementation {
   uint8_t transfer;
   uint8_t dataSent = 0;
   uint8_t firstNeighbor = 0;
+  uint8_t sentData = 0;
   bool send = TRUE;
   pack sendMessage;
 
