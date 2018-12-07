@@ -470,11 +470,11 @@ void addNeighbor(uint8_t Neighbor){
       if(recievedMsg->protocol == PROTOCOL_TCP){
         dbg(GENERAL_CHANNEL, "Relaying TCP Packet(%d) To Destination %d\n", recievedMsg->TTL, findNextHop(recievedMsg->dest));
       }
-      call Sendor.send(sendPackage, recievedMsg->msg);
+      call Sendor.send(sendPackage, recievedMsg->dest);
     } else {
       if(recievedMsg->protocol == PROTOCOL_TCP){
         dbg(GENERAL_CHANNEL, "Relaying TCP Packet(%d) To Neighbor %d\n", recievedMsg->TTL, findNextHop(recievedMsg->dest));
-        call Sendor.send(sendPackage, findNextHop(recievedMsg->msg));
+        call Sendor.send(sendPackage, findNextHop(recievedMsg->dest));
       }
     }
   }
