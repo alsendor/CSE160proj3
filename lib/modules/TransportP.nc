@@ -33,7 +33,7 @@ implementation {
   uint16_t* IPseq = 0;
   uint8_t NeighborList[19];
   uint8_t transfer;
-  uint8_t dataSent = 0;
+  uint8_t datasent = 0;
   uint8_t firstNeighbor = 0;
   bool send = TRUE;
   pack sendMessage;
@@ -53,8 +53,8 @@ event void timeoutTimer.fired() {
 		dbg(GENERAL_CHANNEL, "\n\tPacket %u timed out! Resending to %d\n", tcpSeq, firstNeighbor);
 		call Sendor.send(sendMessage, firstNeighbor);
 		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
-		if(sentData != transfer)
-			call timeoutTimer.startTimer(12000);
+		if(datasent != transfer)
+			call timeoutTimer.startOneShot(12000);
 	}
 
 //Passing the sequence number
@@ -63,10 +63,11 @@ command void Transport.passSeq(uint16_t* seq) {
 	}
 //Passng the neighbor list
   command void Transport.passNeighborsList(uint8_t* neighbors[]) {
+    int i;
     dbg(GENERAL_CHANNEL, "Passing Neighbor List\n");
   		memcpy(NeighborList, (void*)neighbors, sizeof(neighbors));
       //iterate through neighborlist adding in all neighbors
-  		for(int i = 1; i < 20; i++) {
+  		for(i = 1; i < 20; i++) {
   			if(NeighborList[i] > 0) {
   				dbg(GENERAL_CHANNEL, "%d's Neighbor is: %d\n", TOS_NODE_ID, i);
   				firstNeighbor = i;
@@ -195,7 +196,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 		transfer = data;
 
 		dbg(GENERAL_CHANNEL, "\t\tStop and Wait!!! Trasnfer: %u, data: %u\n", transfer, data);
-		if(send == TRUE && sentData < transfer){
+		if(send == TRUE && datasent < transfer){
 			//make the TCPpack
 			tcpSeq = tcpSeq++;
 			tcp.destPort = sock.dest.port;
@@ -203,8 +204,8 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			dbg(GENERAL_CHANNEL, "\t\tTCP Seq: %u\n", tcpSeq);
 			tcp.seq = tcpSeq;
 			tcp.flag = 10;
-			tcp.numBytes = sizeof(sentData);
-			memcpy(tcp.payload, &sentData, TCP_MAX_PAYLOAD_SIZE);
+			tcp.numBytes = sizeof(datasent);
+			memcpy(tcp.payload, &datasent, TCP_MAX_PAYLOAD_SIZE);
 
 			sendMessage.dest = sock.dest.addr;
 			sendMessage.src = TOS_NODE_ID;
@@ -218,7 +219,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			sendMessage.protocol = PROTOCOL_TCP;
 			memcpy(sendMessage.payload, &tcp, TCP_MAX_PAYLOAD_SIZE);
 
-			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", sentData, sock.dest.addr, sock.dest.port);
+			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", datasent, sock.dest.addr, sock.dest.port);
 			//call Transport.send(&sock, msg);
 			if (NeighborList[sendMessage.dest] > 0) {
 				firstNeighbor = sendMessage.dest;
@@ -226,10 +227,10 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			}
 			call Sendor.send(sendMessage, firstNeighbor);
 			send = FALSE;
-			sentData++;
+			datasent++;
 
-			if(sentData != transfer){
-				call timeoutTimer.startTimer(12000);
+			if(datasent != transfer){
+				call timeoutTimer.startOneShot(12000);
       } else call timeoutTimer.stop();
 		}
 	}
@@ -283,8 +284,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       call sockets.remove(fd);
       newSocket.dest.port = ROOT_SOCKET_PORT;
       newSocket.dest.addr = ROOT_SOCKET_ADDR;
-      newSocket.src.port = addr->port;
-      newSocket.src.addr = addr->addr;
+      newSocket.src = addr->port;
 
       dbg(GENERAL_CHANNEL, "\t -- Successful Bind\n");
       //Insert socket back into hashtable
@@ -463,7 +463,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
         socket.state = ESTABLISHED;
         //Check if we recieved ACK
-        if(recievedTcp->ack == tcpSeq + 1 && sentData != transfer){
+        if(recievedTcp->ack == tcpSeq + 1 && datasent != transfer){
           send = TRUE;
           call Transport.stopAndWait(socket, transfer, IPseq++);
         }
@@ -595,7 +595,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       msg.dest = newConnection.dest.addr;
 			msg.src = TOS_NODE_ID;
 			msg.seq = seq;
-			msg.TTL = ttl;
+			msg.TTL = TTL;
 			msg.protocol = PROTOCOL_TCP;
 			memcpy(msg.payload, (void*)tcp_msg, TCP_MAX_PAYLOAD_SIZE);
       /*call Transport.makePack(&msg, (uint16_t)TOS_NODE_ID, (uint16_t)newConnection.src,
@@ -606,7 +606,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       //Update hashtable
       call sockets.insert(fd, newConnection);
       dbg(GENERAL_CHANNEL, "\t\t -- Connection Successful!!!\n");
-      return SUCCESS
+      return SUCCESS;
     }
     else return FAIL;
     dbg(GENERAL_CHANNEL, "\t\t -- Connection Failed!!!\n");
@@ -640,7 +640,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       dbg(GENERAL_CHANNEL, "Here 1\n");
       tcp_msg->numBytes = 0;
       dbg(GENERAL_CHANNEL, "Here 2\n");
-      msg.dest = socket.dest.address;
+      msg.dest = socket.dest.addr;
       msg.src = TOS_NODE_ID;
       msg.seq = seq;
       msg.TTL = 15;
