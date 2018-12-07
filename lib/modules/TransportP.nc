@@ -53,7 +53,7 @@ event void timeoutTimer.fired() {
 		dbg(GENERAL_CHANNEL, "\n\tPacket %u timed out! Resending to %d\n", tcpSeq, firstNeighbor);
 		call Sendor.send(sendMessage, firstNeighbor);
 		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
-		if(sentData != transfer)
+		if(datasent != transfer)
 			call timeoutTimer.startTimer(12000);
 	}
 
