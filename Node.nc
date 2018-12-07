@@ -438,8 +438,60 @@ implementation {
     } return 0;
   }
 
+//Neighbor Discovery
+void addNeighbor(uint8_t Neighbor){
+  NeighborList[Neighbor] = MAX_NEIGHBOR_TTL;
+}
 
+//Dropping neighborPing
+  void reduceNeighborTTL(){
+    for(int i = 0; i < NeighborListSize; i++){
+      if(NeighborList[i] == 1){
+        NeighborList[i] = 0;
+        routing[i][1] = 255;
+        routing[i][2] = 0;
+        nodeSeq++;
+        makePack(&sendPackage, TOS_NODE_ID, AM_BROADCAST_ADDR, 1, PROTOCOL_PING, nodeSeq, "NeighborSearch", PACKET_MAX_PAYLOAD_SIZE);
+        call Sendor.send(sendPackage, (uint8_t) i);
+      }
+      if(NeighborList[i] > 1){
+        NeighborList[i] -= 1;
+      }
+    }
+  }
 
+//Relays msg to neighbors in NeighborList, if empty we forward to everyone within range
+  void relayToNeighbor(pack* recievedMsg){
+    if(destIsNeighbor(recievedMsg)){
+      if(recievedMsg->protocol == PROTOCOL_TCP){
+        dbg(GENERAL_CHANNEL, "Relaying TCP Packet(%d) To Destination %d\n", recievedMsg->TTL, findNextHop(recievedMsg->dest));
+      }
+      call Sendor.send(sendPackage, recievedMsg->msg);
+    } else {
+      if(recievedMsg->protocol == PROTOCOL_TCP){
+        dbg(GENERAL_CHANNEL, "Relaying TCP Packet(%d) To Neighbor %d\n", recievedMsg->TTL, findNextHop(recievedMsg->dest));
+        call Sendor.send(sendPackage, findNextHop(recievedMsg->msg));
+      }
+    }
+  }
+
+//Check to see if the dest is a neighbor
+bool destIsNeighbor(pack* recievedMsg){
+  if(NeighborList[recievedMsg->dest] > 0){
+    return 1;
+  } else return 0;
+}
+
+//search for neighbors by broadcasting a ping with TTL of 1 meaning its a direct neighbor
+void scanNeighbors(){
+  if(initialized = false){
+    nodeSeq++;
+    makePack(&sendPackage, TOS_NODE_ID, AM_BROADCAST_ADDR, 1, PROTOCOL_PING, nodeSeq, "NeighborSearch", PACKET_MAX_PAYLOAD_SIZE);
+    call Sendor.send(sendPackage, AM_BROADCAST_ADDR);
+  } else reduceNeighborTTL();
+}
+
+//
 
 
 
