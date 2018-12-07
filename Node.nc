@@ -532,7 +532,50 @@ void sendTableToNeighbors(){
 }
 
 //Merge routes, creating an updated DV table
+bool mergeRoute(uint8_t* newRoute, uint8_t src){
+  int cost, node, nextHop;
+  bool alteredRoute = FALSE;
 
+  //Two loops to iterate through routing[] and newRoute. Save values into made variables.
+  for(int i = 0; i < 20; i++){
+    for(int j = 0; j < 7; j++){
+      node = *(newRoute + (j * 3));
+      cost = *(newRoute + (j * 3) + 1);
+      nextHop = *(newRoute + (j * 3) + 2);
+
+      if(node == routing[i][0]){
+        if((cost + 1) <= routing[i][1]){
+          routing[i][0] = node;
+          routing[i][1] = cost + 1;
+          routing[i][2] = src;
+
+          alteredRoute = TRUE;
+        }
+      }
+    }
+  }
+  return alteredRoute;
+}
+
+//When sending DV table to neighbors, our nextHop is the direct neighbor we are sending this to
+  void splitHorizon(uint8_t nextHop){
+    uint8_t* poisonTable = NULL;
+    uint8_t* startOfPoison;
+    //Allocating size on heap but returning pointers
+    startOfPoison = malloc(sizeof(routing));
+    poisonTable = malloc(sizeof(routing));
+    //Copy routing table data onto poisonTable
+    memcpy(poisonTable, &routing, sizeof(routing));
+    startOfPoison = poisonTable;
+    //Insert poison to table (MAX_HOP)
+    for(int i = 0; i < 20; i++){
+      if(nextHop == i){
+        //Poison reverse makes the new path cost infinity
+        *(poisonTable + (i * 3) + 1) = 25;
+      }
+    }
+    //payload is too large, so we send in chunks 
+  }
 
 
 
