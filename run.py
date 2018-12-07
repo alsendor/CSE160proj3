@@ -28,23 +28,11 @@ def main():
     s.runTime(10)
 
     # After sending a ping, simulate a little to prevent collision.
-    s.ping(2, 3, "Hello, World")
-    s.runTime(10)
+    s.newServer(1, 41)
+    s.newClient(1, 10, 41, 10)
 
-    s.moteOff(4)
-    s.runTime(20)
 
-    #s.ping(1, 19, "Hi!")
-    #s.runTime(10)
-
-    s.ping(1, 8, "YOOOOO")
-    s.runTime(10)
-
-    s.moteOn(4)
-    s.runTime(10)
-
-    s.ping(1, 8, "YOOOOO")
-    s.runTime(10)
+    s.clientClose(1 ,1 ,10, 41)
 
 if __name__ == '__main__':
     main()
