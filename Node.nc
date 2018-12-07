@@ -317,7 +317,7 @@ implementation {
           call Transport.passNeighborList(&NeighborList);
           //Make sure we are listeing
           if(call Transport.listen(fd) == SUCCESS){
-            call listenTimer.startTimer(30000);
+            call listenTimer.startOneShot(30000);
           }
         }
     }
@@ -340,7 +340,7 @@ implementation {
 
           if(call Transport.connect(fd, &serverAddr) == SUCCESS){
             dbg(GENERAL_CHANNEL, "Connection Was Successful!!!\n");
-            call writeTimer.startTimer(60000);
+            call writeTimer.startOneShot(60000);
           } else dbg(GENERAL_CHANNEL, "Connection Was Not Successful!!!\n");
         } else dbg(GENERAL_CHANNEL, "Binding Was Not Successful!!!\n");
     }
@@ -360,7 +360,7 @@ implementation {
         call Transport.passNeighborList(&NeighborList);
         //Make sure we are listeing
         if(call Transport.listen(fd) == SUCCESS){
-          call listenTimer.startTimer(30000);
+          call listenTimer.startOneShot(30000);
         }
       }
 
@@ -385,7 +385,7 @@ implementation {
 
         if(call Transport.connect(fd, &serverAddr) == SUCCESS){
           dbg(GENERAL_CHANNEL, "App Client Connection Was Successful!!!\n");
-          call writeTimer.startTimer(60000);
+          call writeTimer.startOneShot(60000);
         } else dbg(GENERAL_CHANNEL, "Connection Was Not Successful!!!\n");
       } else dbg(GENERAL_CHANNEL, "Binding Was Not Successful!!!\n");
     }
