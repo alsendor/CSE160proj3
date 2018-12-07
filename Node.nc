@@ -147,8 +147,21 @@ implementation {
       dbg(GENERAL_CHANNEL, "\t\t\t    -- Socket is valid!!! \n");
       sockWrite = call Transport.getSocket(fd);
     } else dbg(GENERAL_CHANNEL, "\t\t\t    -- Socket is not valid!!! \n");
+
+    if(sockWrite.lastWritten == 0 || sockWrite.lastWritten == SOCKET_BUFFER_SIZE){
+      dbg(GENERAL_CHANNEL, "\t\t\t    -- Making data, sending %u bytes\n", transfer);
+
+      //Run stop and wait
+      call Transport.stopAndWait(sockWrite, transfer, nodeSeq);
+      nodeSeq++;
+    }
   }
 
+//initialize time out timer
+  event void timeoutTimer.fired(){
+
+    dbg(GENERAL_CHANNEL, "TimedOut.fired() -- No ACK received \n");
+  }
 
 
     event void AMControl.startDone(error_t err) {
