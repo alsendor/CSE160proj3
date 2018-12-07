@@ -345,6 +345,7 @@ implementation {
 //Remake of setTestServer
     event void CommandHandler.setAppServer() {
       socket_addr_t requiredPort;
+      uint8_t port = 41;
       dbg(GENERAL_CHANNEL, "Initialized Server Port: %d\n", port);
 
       fd = call Transport.socket();
@@ -352,7 +353,7 @@ implementation {
       requiredPort.port = port;
 
       if(call Transport.bind(fd, &requiredPort) == SUCCESS){
-        dbg(GENERAL_CHANNEL, "Server Bind Was Successful!!!\n");
+        dbg(GENERAL_CHANNEL, "App Server Bind Was Successful!!!\n");
         call Transport.passNeighborList(&NeighborList);
         //Make sure we are listeing
         if(call Transport.listen(fd) == SUCCESS){
@@ -362,16 +363,90 @@ implementation {
 
     }
 
-    event void CommandHandler.setAppClient() {}
+//Remake of setTestClient
+    event void CommandHandler.setAppClient(uint8_t port) {
+      socket_addr_t serverAddr, socketAddr;
+      socket_store_t socket;
+      error_t check = FAIL;
+      fd = call Transport.socket();
 
-    event void CommandHandler.closeConnection(uint8_t clientAddress, uint16_t dest, uint8_t srcPort, uint8_t destPort) {
-      //Impelement in TCProtocol
-      socket_t toClose;
-      //toClose = call Transport.findSocket(dest, srcPort, destPort);
-      if (toClose != 0)
-         call Transport.close(toClose);
+      socketAddr.port = srcPort;
+      socketAddr.addr = TOS_NODE_ID;
+      dbg(GENERAL_CHANNEL, "Set App Client For: %d\n", TOS_NODE_ID);
+
+      if(call Transport.bind(fd, &socketAddr) == SUCCESS){
+        dbg(GENERAL_CHANNEL, "App Client Bind Was Successful!!!\n");
+        serverAddr.port = 41;
+        serverAddr.addr = 1;
+        call Transport.passNeighborList(&NeighborList);
+
+        if(call Transport.connect(fd, &serverAddr) == SUCCESS){
+          dbg(GENERAL_CHANNEL, "App Client Connection Was Successful!!!\n");
+          call writeTimer.startTimer(60000)
+        } else dbg(GENERAL_CHANNEL, "Connection Was Not Successful!!!\n");
+      } else dbg(GENERAL_CHANNEL, "Binding Was Not Successful!!!\n");
     }
 
+//Close connection once three way handshake is complete
+    event void CommandHandler.closeConnection(uint8_t dest, uint8_t srcPort, uint8_t destPort, uint8_t transfer) {
+      //Impelement in TCProtocol
+      socket_store_t socket;
+      //toClose = call Transport.findSocket(dest, srcPort, destPort);
+      fd = call Transport.findSocket(srcPort, destPort, dest);
+         call Transport.close(fd, nodeSeq++);
+    }
+
+//Pack Handling
+  void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t Protocol, uint16_t seq, uint8_t *payload, uint8_t length){
+  Package->src = src;
+  Package->dest = dest;
+  Package->TTL = TTL;
+  Package->seq = seq;
+  Package->protocol = protocol;
+  memcpy(Package->payload, payload, length);
+
+}
+
+//Logging packets
+  void logPacket(pack* payload){
+    uint16_t src = payload->src;
+    uint16_t seq = payload->seq;
+    pack loggedPack;
+
+    //Check if pack log is empty and pop off old key value pair to insert new one
+    if(call packLogs.size() == 64){
+      call packLogs.popfront();
+    }
+    makePack(&loggedPack, payload->src, payload->dest, payload->TTL, payload->protocol, payload->seq, (uint8_t*) payload->payload, sizeof(pack));
+    call packLogs.pushback(loggedPack);
+  }
+
+//Check if packets have been seen
+  bool hasSeen(pack* packet){
+    pack storedPacks;
+    int size;
+    size = call packLogs.size();
+    //Make sure packLogs is not empty
+    if(size > 0){
+      //iterate through packLogs to check for previously seen packs
+      for(int i = 0; i < size; i++){
+        storedPacks = call packLogs.get(i);
+        if(storedPacks.seq == packet->seq && storedPacks.src == packet->src){
+          return 1;
+        }
+      }
+    } return 0;
+  }
+
+
+
+
+
+
+
+
+
+/*
     event void acceptTimer.fired() {
       socket_t tempSocket;
       int i, size;
@@ -425,6 +500,6 @@ implementation {
              break;
         }
       }
-    }
+    } */
 
 }
