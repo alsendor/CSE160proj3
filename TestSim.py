@@ -141,7 +141,7 @@ class TestSim:
 
     def newClient(self, target, dest, srcPort, destPort, num):
         print 'New Client'
-        self.sendCMD(self.CMD_TEST_CLIENT,  target,  "{0}{1}{2}{3}{4}".format(chr(dest), chr(srcPort), chr(destPort), chr(num & 0xFF), chr((num >> 8) & 0xFF)));
+        self.sendCMD(self.CMD_TEST_CLIENT,  target,  "{0}{1}{2}{3}".format(chr(dest), chr(srcPort), chr(destPort), chr(num));
 
     def clientClose(self, target, dest, srcPort, destPort):
         print 'Close Client'
@@ -165,7 +165,7 @@ class TestSim:
 
     #def cmdTestClient(self, dest, srcPort, destPort, transfer):
         #print 'Testing Client';
-        #self.sendCMD(self.CMD_TEST_CLIENT, dest, "{0}{1}{2}".format(chr()))
+        #self.sendCMD(self.CMD_TEST_CLIENT, dest, "{0}{1}{2}".format(chr(srcPort), chr(dest)))
         #    def cmdClientClose(self, client_addr, dest, srcPort, destPort):
             #    self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
 
