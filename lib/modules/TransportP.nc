@@ -53,13 +53,8 @@ event void timeoutTimer.fired() {
 		dbg(GENERAL_CHANNEL, "\n\tPacket %u timed out! Resending to %d\n", tcpSeq, firstNeighbor);
 		call Sendor.send(sendMessage, firstNeighbor);
 		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
-<<<<<<< HEAD
 		if(datasent != transfer)
 			call timeoutTimer.startOneShot(12000);
-=======
-		if(sentData != transfer)
-			call timeoutTimer.startTimer(12000);
->>>>>>> 26d9aa29eadfa024b8adebc78d34735ef4ed3a0e
 	}
 
 //Passing the sequence number
@@ -200,7 +195,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 		transfer = data;
 
 		dbg(GENERAL_CHANNEL, "\t\tStop and Wait!!! Trasnfer: %u, data: %u\n", transfer, data);
-		if(send == TRUE && sentData < transfer){
+		if(send == TRUE && datasent < transfer){
 			//make the TCPpack
 			tcpSeq = tcpSeq++;
 			tcp.destPort = sock.dest.port;
@@ -208,8 +203,8 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			dbg(GENERAL_CHANNEL, "\t\tTCP Seq: %u\n", tcpSeq);
 			tcp.seq = tcpSeq;
 			tcp.flag = 10;
-			tcp.numBytes = sizeof(sentData);
-			memcpy(tcp.payload, &sentData, TCP_MAX_PAYLOAD_SIZE);
+			tcp.numBytes = sizeof(datasent);
+			memcpy(tcp.payload, &datasent, TCP_MAX_PAYLOAD_SIZE);
 
 			sendMessage.dest = sock.dest.addr;
 			sendMessage.src = TOS_NODE_ID;
@@ -223,7 +218,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			sendMessage.protocol = PROTOCOL_TCP;
 			memcpy(sendMessage.payload, &tcp, TCP_MAX_PAYLOAD_SIZE);
 
-			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", sentData, sock.dest.addr, sock.dest.port);
+			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", datasent, sock.dest.addr, sock.dest.port);
 			//call Transport.send(&sock, msg);
 			if (NeighborList[sendMessage.dest] > 0) {
 				firstNeighbor = sendMessage.dest;
@@ -231,15 +226,10 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			}
 			call Sendor.send(sendMessage, firstNeighbor);
 			send = FALSE;
-			sentData++;
+			datasent++;
 
-<<<<<<< HEAD
 			if(datasent != transfer){
 				call timeoutTimer.startOneShot(12000);
-=======
-			if(sentData != transfer){
-				call timeoutTimer.startTimer(12000);
->>>>>>> 26d9aa29eadfa024b8adebc78d34735ef4ed3a0e
       } else call timeoutTimer.stop();
 		}
 	}
@@ -473,7 +463,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
         socket.state = ESTABLISHED;
         //Check if we recieved ACK
-        if(recievedTcp->ack == tcpSeq + 1 && sentData != transfer){
+        if(recievedTcp->ack == tcpSeq + 1 && datasent != transfer){
           send = TRUE;
           call Transport.stopAndWait(socket, transfer, IPseq++);
         }
