@@ -270,7 +270,8 @@ implementation {
         //call DistanceVectorRouting.ping(destination, payload);
         //call Flooding.ping(destination, payload);
     }
-//Print neighbors
+
+//Print mote's neighbors
     event void CommandHandler.printNeighbors() {
       int count = 0;
       dbg(NEIGHBOR_CHANNEL, "\t%d's Neighbors\n", TOS_NODE_ID);
@@ -283,8 +284,13 @@ implementation {
             dbg(GENERAL_CHANNEL, "Neighbors List is Empty\n");
     }
 
+//Print the routing table
     event void CommandHandler.printRouteTable() {
-        call DistanceVectorRouting.printRouteTable();
+      dbg(GENERAL_CHANNEL, "\t~~~~~~~%d's Routing Table~~~~~~~\n", TOS_NODE_ID);
+		  dbg(GENERAL_CHANNEL, "\tDest\tCost\tNext Hop:\n");
+      for(int i = 1; i <= poolSize; i++){
+        dbg(GENERAL_CHANNEL, "\t  %d \t  %d \t    %d \n", routing[i][0], routing[i][1], routing[i][2]);
+      }
     }
 
     event void CommandHandler.printLinkState() {}
