@@ -259,10 +259,15 @@ implementation {
          return msg;
     }
 
-    
-
+//Send ping
     event void CommandHandler.ping(uint16_t destination, uint8_t *payload) {
-        call DistanceVectorRouting.ping(destination, payload);
+      nodeSeq++;
+      dbg(GENERAL_CHANNEL, "\tPackage(%d,%d) Ping Sent\n", TOS_NODE_ID, destination);
+      logPacket(&sendPackage);
+      if(initialized = false){
+        call Sendor.send(sendPackage, AM_BROADCAST_ADDR);
+      } else call Sendor.send(sendPackage, findNextHop(destination));
+        //call DistanceVectorRouting.ping(destination, payload);
         //call Flooding.ping(destination, payload);
     }
 
