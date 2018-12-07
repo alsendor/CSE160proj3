@@ -373,7 +373,7 @@ implementation {
       error_t check = FAIL;
       fd = call Transport.socket();
 
-      socketAddr.port = srcPort;
+      socketAddr.port = port;
       socketAddr.addr = TOS_NODE_ID;
       dbg(GENERAL_CHANNEL, "Set App Client For: %d\n", TOS_NODE_ID);
 
