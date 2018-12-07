@@ -33,7 +33,7 @@ implementation {
   uint16_t* IPseq = 0;
   uint8_t NeighborList[19];
   uint8_t transfer;
-  uint8_t datasent = 0;
+  uint8_t dataSent = 0;
   uint8_t firstNeighbor = 0;
   bool send = TRUE;
   pack sendMessage;
@@ -53,8 +53,8 @@ event void timeoutTimer.fired() {
 		dbg(GENERAL_CHANNEL, "\n\tPacket %u timed out! Resending to %d\n", tcpSeq, firstNeighbor);
 		call Sendor.send(sendMessage, firstNeighbor);
 		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
-		if(datasent != transfer)
-			call timeoutTimer.startOneShot(12000);
+		if(sentData != transfer)
+			call timeoutTimer.startTimer(12000);
 	}
 
 //Passing the sequence number
@@ -63,11 +63,10 @@ command void Transport.passSeq(uint16_t* seq) {
 	}
 //Passng the neighbor list
   command void Transport.passNeighborsList(uint8_t* neighbors[]) {
-    int i;
     dbg(GENERAL_CHANNEL, "Passing Neighbor List\n");
   		memcpy(NeighborList, (void*)neighbors, sizeof(neighbors));
       //iterate through neighborlist adding in all neighbors
-  		for(i = 1; i < 20; i++) {
+  		for(int i = 1; i < 20; i++) {
   			if(NeighborList[i] > 0) {
   				dbg(GENERAL_CHANNEL, "%d's Neighbor is: %d\n", TOS_NODE_ID, i);
   				firstNeighbor = i;
@@ -196,7 +195,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 		transfer = data;
 
 		dbg(GENERAL_CHANNEL, "\t\tStop and Wait!!! Trasnfer: %u, data: %u\n", transfer, data);
-		if(send == TRUE && datasent < transfer){
+		if(send == TRUE && sentData < transfer){
 			//make the TCPpack
 			tcpSeq = tcpSeq++;
 			tcp.destPort = sock.dest.port;
@@ -204,8 +203,8 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			dbg(GENERAL_CHANNEL, "\t\tTCP Seq: %u\n", tcpSeq);
 			tcp.seq = tcpSeq;
 			tcp.flag = 10;
-			tcp.numBytes = sizeof(datasent);
-			memcpy(tcp.payload, &datasent, TCP_MAX_PAYLOAD_SIZE);
+			tcp.numBytes = sizeof(sentData);
+			memcpy(tcp.payload, &sentData, TCP_MAX_PAYLOAD_SIZE);
 
 			sendMessage.dest = sock.dest.addr;
 			sendMessage.src = TOS_NODE_ID;
@@ -219,7 +218,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			sendMessage.protocol = PROTOCOL_TCP;
 			memcpy(sendMessage.payload, &tcp, TCP_MAX_PAYLOAD_SIZE);
 
-			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", datasent, sock.dest.addr, sock.dest.port);
+			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", sentData, sock.dest.addr, sock.dest.port);
 			//call Transport.send(&sock, msg);
 			if (NeighborList[sendMessage.dest] > 0) {
 				firstNeighbor = sendMessage.dest;
@@ -227,10 +226,10 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			}
 			call Sendor.send(sendMessage, firstNeighbor);
 			send = FALSE;
-			datasent++;
+			sentData++;
 
-			if(datasent != transfer){
-				call timeoutTimer.startOneShot(12000);
+			if(sentData != transfer){
+				call timeoutTimer.startTimer(12000);
       } else call timeoutTimer.stop();
 		}
 	}
@@ -464,7 +463,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
         socket.state = ESTABLISHED;
         //Check if we recieved ACK
-        if(recievedTcp->ack == tcpSeq + 1 && datasent != transfer){
+        if(recievedTcp->ack == tcpSeq + 1 && sentData != transfer){
           send = TRUE;
           call Transport.stopAndWait(socket, transfer, IPseq++);
         }
@@ -575,7 +574,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 		uint8_t TTL;
 		TCPpack* tcp_msg;
 		uint8_t* payload = 0;
-		TTL = 18;
+		TTL = 15;
 
     dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
 
@@ -606,9 +605,11 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
       //Update hashtable
       call sockets.insert(fd, newConnection);
+      dbg(GENERAL_CHANNEL, "\t\t -- Connection Successful!!!\n");
       return SUCCESS
     }
     else return FAIL;
+    dbg(GENERAL_CHANNEL, "\t\t -- Connection Failed!!!\n");
   }
 
   /**
