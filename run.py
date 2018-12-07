@@ -28,6 +28,8 @@ def main():
 
     s.runTime(10)
 
+    s.ping(1,4)
+
     # After sending a ping, simulate a little to prevent collision.
     s.newServer(1, 41)
     s.newClient(2, 1, 10, 41, 10)
