@@ -497,10 +497,11 @@ void scanNeighbors(){
 
 //Distance Vector Table
 void initialize(){
+  int i,j;
   dbg(ROUTING_CHANNEL, "Initializing Distance Vector Routing Table!!!\n");
 
   //Set all nodes in table to MAX_HOP and nextHop to an empty first cell
-  for(int i = 1; i < 20; i++){
+  for(i = 1; i < 20; i++){
     routing[i][0] = i;
     routing[i][1] = 255;
     routing[i][2] = 0;
@@ -511,7 +512,7 @@ void initialize(){
   routing[TOS_NODE_ID][2] = TOS_NODE_ID;
 
   //set cost to all neighbors
-  for(int j = 1; j < NeighborListSize; j++){
+  for(j = 1; j < NeighborListSize; j++){
     if(NeighborList[j] > 0){
       insert(j, 1, j);
     }
