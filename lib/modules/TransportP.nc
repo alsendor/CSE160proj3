@@ -587,7 +587,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       msg.dest = newConnection.dest.addr;
 			msg.src = TOS_NODE_ID;
 			msg.seq = seq;
-			msg.TTL = ttl;
+			msg.TTL = TTL;
 			msg.protocol = PROTOCOL_TCP;
 			memcpy(msg.payload, (void*)tcp_msg, TCP_MAX_PAYLOAD_SIZE);
       /*call Transport.makePack(&msg, (uint16_t)TOS_NODE_ID, (uint16_t)newConnection.src,
