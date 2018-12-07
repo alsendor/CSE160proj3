@@ -87,12 +87,26 @@ implementation {
       //call NeighborDiscovery.start();
       //call DistanceVectorRouting.start();
 
-      //Create start timer and interval timer
+//Create start timer and interval timer
       t0 = 500 + call Random.rand32() % 1000;
       tI = 25000 + call Random.rand32() % 10000;
       call Timer.startPeriodic(t0, tI);
       dbg(GENERAL_CHANNEL, "Booted\n");
     }
+
+//t0 milliseconds begins timer and fires every tI interval
+  event void Timer.fired(){
+    uint32_t t0, tI;
+    scanNeighbors();
+
+    t0 = 20000 + call Random.rand32() % 1000;
+    tI = 25000 + call Random.rand32() % 10000;
+
+    if(fired = false){
+      call tableUpdateTimer.startPeriodic(t0, tI);
+      fired = true;
+    }
+  }
 
     event void AMControl.startDone(error_t err) {
         if(err == SUCCESS) {
