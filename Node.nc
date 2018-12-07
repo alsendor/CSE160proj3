@@ -405,7 +405,7 @@ implementation {
   Package->dest = dest;
   Package->TTL = TTL;
   Package->seq = seq;
-  Package->protocol = protocol;
+  Package->protocol = Protocol;
   memcpy(Package->payload, payload, length);
 
 }
@@ -427,12 +427,12 @@ implementation {
 //Check if packets have been seen
   bool hasSeen(pack* packet){
     pack storedPacks;
-    int size;
+    int size, i;
     size = call packLogs.size();
     //Make sure packLogs is not empty
     if(size > 0){
       //iterate through packLogs to check for previously seen packs
-      for(int i = 0; i < size; i++){
+      for(i = 0; i < size; i++){
         storedPacks = call packLogs.get(i);
         if(storedPacks.seq == packet->seq && storedPacks.src == packet->src){
           return 1;
