@@ -30,6 +30,8 @@ def main():
     # After sending a ping, simulate a little to prevent collision.
     s.newServer(1, 41)
     s.newClient(2, 1, 10, 41, 10)
+    s.newClient(3, 1, 11, 41, 10)
+    s.newClient(4, 1, 12, 41, 10)
 
 
     s.clientClose(2 ,1 ,10, 41)

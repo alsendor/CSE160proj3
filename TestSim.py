@@ -144,7 +144,7 @@ class TestSim:
         self.sendCMD(self.CMD_TEST_CLIENT,  target,  "{0}{1}{2}{3}{4}".format(chr(dest), chr(srcPort), chr(destPort), chr(num & 0xFF), chr((num >> 8) & 0xFF)));
 
     def clientClose(self, target, dest, srcPort, destPort):
-        print 'Clsoe Client'
+        print 'Close Client'
         self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
 
     def addChannel(self, channelName, out=sys.stdout):
