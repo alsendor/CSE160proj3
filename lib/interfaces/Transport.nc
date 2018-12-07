@@ -170,6 +170,4 @@ interface Transport{
 
    command void passNeighborsList(uint8_t* neighbors[]);
 
-   command socket_t findSocket(uint8_t destAddr, uint8_t srcPort, uint8_t destPort);
-
  }
