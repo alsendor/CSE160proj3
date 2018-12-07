@@ -126,7 +126,7 @@ implementation {
     fd = call Transport.accept(fd);
 
     if(fd != (socket_t)NULL){
-      //Test for size of socketList 
+      //Test for size of socketList
       if(call SocketList.size() < 10){
         dbg(GENERAL_CHANNEL, "\t-- Saved new fd: %d\n", fd);
         call SocketList.pushback(fd);
@@ -138,6 +138,17 @@ implementation {
     } else dbg(GENERAL_CHANNEL, "\t-- fd is NULL\n");
 
   }
+
+//initialize Timer for writing data
+  event void writeTimer.fired(){
+    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
+    socket_store_t sockWrite;
+    if(call Transport.isValidSocket(fd)){
+      dbg(GENERAL_CHANNEL, "\t\t\t    -- Socket is valid!!! \n");
+      sockWrite = call Transport.getSocket(fd);
+    } else dbg(GENERAL_CHANNEL, "\t\t\t    -- Socket is not valid!!! \n");
+  }
+
 
 
     event void AMControl.startDone(error_t err) {
