@@ -29,10 +29,10 @@ def main():
 
     # After sending a ping, simulate a little to prevent collision.
     s.newServer(1, 41)
-    s.newClient(1, 10, 41, 10)
+    s.newClient(2, 1, 10, 41, 10)
 
 
-    s.clientClose(1 ,1 ,10, 41)
+    s.clientClose(2 ,1 ,10, 41)
 
 if __name__ == '__main__':
     main()
