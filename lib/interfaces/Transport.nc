@@ -168,6 +168,6 @@ interface Transport{
 
    command void stopAndWait(socket_store_t sock, uint8_t data, uint16_t IPseqnum);
 
-   command void passNeighborsList(uint8_t* neighbors[]);
+   command void passNeighborList(uint8_t* neighbors[]);
 
  }

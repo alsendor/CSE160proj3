@@ -62,7 +62,7 @@ command void Transport.passSeq(uint16_t* seq) {
 		IPseq = seq;
 	}
 //Passng the neighbor list
-  command void Transport.passNeighborsList(uint8_t* neighbors[]) {
+  command void Transport.passNeighborList(uint8_t* neighbors[]) {
     int i;
     dbg(GENERAL_CHANNEL, "Passing Neighbor List\n");
   		memcpy(NeighborList, (void*)neighbors, sizeof(neighbors));
