@@ -35,7 +35,7 @@ implementation {
   //  Node.RecieveRouteReply -> RecieveRouteReply;
 
     components new ListC(pack, 64) as packLogsC;
-    Node.packLogs -> packLogsC
+    Node.packLogs -> packLogsC;
 
     components new SimpleSendC(AM_PACK);
     Node.Sendor -> SimpleSendC;

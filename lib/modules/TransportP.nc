@@ -35,6 +35,7 @@ implementation {
   uint8_t transfer;
   uint8_t dataSent = 0;
   uint8_t firstNeighbor = 0;
+  uint8_t sentData = 0;
   bool send = TRUE;
   pack sendMessage;
 
@@ -54,7 +55,7 @@ event void timeoutTimer.fired() {
 		call Sendor.send(sendMessage, firstNeighbor);
 		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
 		if(sentData != transfer)
-			call TimedOut.startTimer(12000);
+			call timeoutTimer.startTimer(12000);
 	}
 
 //Passing the sequence number
@@ -63,10 +64,11 @@ command void Transport.passSeq(uint16_t* seq) {
 	}
 //Passng the neighbor list
   command void Transport.passNeighborsList(uint8_t* neighbors[]) {
+    int i;
     dbg(GENERAL_CHANNEL, "Passing Neighbor List\n");
   		memcpy(NeighborList, (void*)neighbors, sizeof(neighbors));
       //iterate through neighborlist adding in all neighbors
-  		for(int i = 1; i < 20; i++) {
+  		for(i = 1; i < 20; i++) {
   			if(NeighborList[i] > 0) {
   				dbg(GENERAL_CHANNEL, "%d's Neighbor is: %d\n", TOS_NODE_ID, i);
   				firstNeighbor = i;
