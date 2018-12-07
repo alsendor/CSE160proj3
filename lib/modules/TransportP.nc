@@ -118,11 +118,6 @@ command TCPpack* Transport.makeSynPack(TCPpack* TCPheader, uint8_t destPort, uin
   		TCPheader->advertisedWindow = advertisedWindow;
   	}
 
-//Method to get socket file descriptor
-  command socket_store_t Transport.getSocket(socket_t fd) {
-    return (call sockets.get(fd));
-  }
-
   /**
    * Get a socket if there is one available.
    * @Side Client/Server
@@ -131,6 +126,35 @@ command TCPpack* Transport.makeSynPack(TCPpack* TCPheader, uint8_t destPort, uin
    *    associated with a socket. If you are unable to allocated
    *    a socket then return a NULL socket_t.
    */
+//Method to get socket file descriptor
+    command socket_store_t Transport.getSocket(socket_t fd) {
+      return (call sockets.get(fd));
+     }
+
+//Look for sockets using destAddr, src, and destPort
+command socket_t Transport.findSocket(uint8_t destAddr, uint8_t srcPort, uint8_t destPort) {
+		socket_store_t searchSocket;
+		uint8_t i;
+		uint8_t fd = 1;
+		dbg(GENERAL_CHANNEL, "\t\tfindSocket(%u, %u, %u) ->\n", destAddr, srcPort, destPort);
+		for (i = 1; i < 11; i++) {
+			if(call sockets.contains(i)){
+				searchSocket = call sockets.get(i);
+				dbg(GENERAL_CHANNEL, "\t\tFound socket!!! src: %u, destPort: %u, destAddr: %u\n", searchSocket.src, searchSocket.dest.port, searchSocket.dest.addr);
+				if(searchSocket.src == destAddr && searchSocket.dest.port == srcPort && searchSocket.dest.addr == destPort){
+					return (socket_t)i;
+				}
+			}
+		}
+	}
+
+//Test if socket is valid based off file descriptor
+command bool Transport.isValidSocket(socket_t fd){
+		if(call sockets.contains(fd)){
+			return TRUE;
+    } else return FALSE;
+	}
+
   command socket_t Transport.socket() {
     int i;
 		socket_store_t newSocket;
