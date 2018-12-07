@@ -687,9 +687,5 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
     return FAIL;
   }
 
-  command socket_t Transport.findSocket(uint16_t dest, uint8_t srcPort, uint8_t destPort){
-
-
-  }
 
 }
