@@ -54,7 +54,7 @@ event void timeoutTimer.fired() {
 		call Sendor.send(sendMessage, firstNeighbor);
 		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
 		if(datasent != transfer)
-			call timeoutTimer.startTimer(12000);
+			call timeoutTimer.startOneShot(12000);
 	}
 
 //Passing the sequence number
@@ -230,7 +230,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			datasent++;
 
 			if(datasent != transfer){
-				call timeoutTimer.startTimer(12000);
+				call timeoutTimer.startOneShot(12000);
       } else call timeoutTimer.stop();
 		}
 	}
