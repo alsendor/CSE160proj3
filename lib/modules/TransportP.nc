@@ -55,7 +55,7 @@ event void timeoutTimer.fired() {
 		call Sendor.send(sendMessage, firstNeighbor);
 		//call Transport.send(call Transport.findSocket(payload->srcPort,payload->destPort, sendMessage.dest), sendMessage);
 		if(sentData != transfer)
-			call TimedOut.startTimer(12000);
+			call timeoutTimer.startTimer(12000);
 	}
 
 //Passing the sequence number
