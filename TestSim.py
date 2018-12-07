@@ -157,7 +157,12 @@ class TestSim:
         self.sendCMD(self.CMD_SET_APP_CLIENT, target, "{0}".format(chr(port)));
 
     #def cmdTestServer(self, address, port):
-        #def cmdTestClient(self, dest, srcPort, destPort, transfer):
+        #print 'Testing Server';
+        #self.sendCMD(self.CMD_TEST_SERVER, address, "{0}".format(chr(port)));
+
+    #def cmdTestClient(self, dest, srcPort, destPort, transfer):
+        #print 'Testing Client';
+        #self.sendCMD(self.CMD_TEST_CLIENT, dest, "{0}{1}{2}".format(chr()))
         #    def cmdClientClose(self, client_addr, dest, srcPort, destPort):
             #    self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
 
