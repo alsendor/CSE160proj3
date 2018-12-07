@@ -163,7 +163,7 @@ implementation {
     dbg(GENERAL_CHANNEL, "TimedOut.fired() -- No ACK received \n");
   }
 
-
+//Radios on
     event void AMControl.startDone(error_t err) {
         if(err == SUCCESS) {
             dbg(GENERAL_CHANNEL, "Radio On\n");
@@ -175,20 +175,91 @@ implementation {
 
     event void AMControl.stopDone(error_t err) {}
 
-    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t len) {
+//Recieve function for pack handling
+    event message_t* Receive.receive(message_t* msg, void* payload, uint8_t length) {
         pack* myMsg = (pack*) payload;
-        if(len!=sizeof(pack)) {
-                dbg(GENERAL_CHANNEL, "Unknown Packet Type %d\n", len);
-        } else if(myMsg->dest == 0) {
-            call NeighborDiscovery.handleNeighbor(myMsg);
-        } else if(myMsg->protocol == PROTOCOL_DV) {
-            call DistanceVectorRouting.handleDV(myMsg);
-        } else {
-            call DistanceVectorRouting.routePacket(myMsg);
-            //call Flooding.handleFlooding(myMsg);
+        pack* recievedMsg;
+        uint8_t nextHop;
+        bool alteredRoute = false;
+
+        if(length != sizeof(pack)) {
+          //Check if we have seen the message
+          if(hasSeen(recievedMsg)){
+            dbg(GENERAL_CHANNEL, "\tPackage(%d,%d) has been seen\n", recievedMsg->src, recievedMsg->dest);
+            return msg;
+          }
+          else if(recievedMsg->TTL = 0){
+            dbg(GENERAL_CHANNEL, "\tPackage(%d,%d) timed out\n", recievedMsg->src, recievedMsg->dest);
+            return msg;
+          }
+          //Ping msg
+          if(recievedMsg->protocol == PROTOCOL_PING && recievedMsg->dest == TOS_NODE_ID){
+            dbg(FLOODING_CHANNEL, "\tPackage(%d,%d) Ping Recieved Seq(%d): %s\n", recievedMsg->src, recievedMsg->dest,  recievedMsg->seq, recievedMsg->payload);
+            logPacket(&sendPackage);
+
+            //PingReply ^msg
+            nodeSeq++;
+            makePack(&sendPackage, recievedMsg->dest, recievedMsg->src, MAX_TTL, PROTOCOL_PINGREPLY, nodeSeq, (uint8_t*)recievedMsg->payload, length);
+            logPacket(&sendPackage);
+            nextHop = findNextHop(recievedMsg->src);
+            call Sendor.send(sendPackage, nextHop);
+            return msg;
+          }
+          //PingReply
+          else if(recievedMsg->dest == TOS_NODE_ID && recievedMsg->protocol == PROTOCOL_PINGREPLY){
+            dbg(FLOODING_CHANNEL, "\tPackage(%d,%d) Ping Reply Recieved: %s\n", recievedMsg->src, recievedMsg->dest, recievedMsg->payload);
+            logPacket(&sendPackage);
+            return msg;
+          }
+          //Add Neighbor
+          else if(recievedMsg->dest == AM_BROADCAST_ADDR && recievedMsg->protocol == PROTOCOL_PING){
+            dbg(GENERAL_CHANNEL, "Neighbor Discovery packet src: %d\n", recievedMsg->src);
+            addNeighbor(recievedMsg->src);
+            logPacket(recievedMsg);
+            return msg;
+          }
+          //DV table
+          else if(recievedMsg->dest == TOS_NODE_ID && recievedMsg->protocol == PROTOCOL_DV){
+            dbg(GENERAL_CHANNEL, "Merge Route!!!\n");
+            alteredRoute = mergeRoute((uint8_t*)recievedMsg->payload, (uint8_t)recievedMsg->src);
+            if(alteredRoute = true){
+              sendTableToNeighbors();
+            }
+            return msg;
+          }
+          //If packet reaches incorrect dest, relay to neighbords
+          else if(recievedMsg->dest != AM_BROADCAST_ADDR && recievedMsg->dest != TOS_NODE_ID){
+            dbg(GENERAL_CHANNEL, "Incorrect Destination, Relaying!!!\n");
+            recievedMsg->TTL--;
+            makePack(&sendPackage, recievedMsg->src, recievedMsg->dest, recievedMsg->TTL, recievedMsg->protocol, recievedMsg->seq, (uint8_t*)recievedMsg->payload, length);
+            logPacket(&sendPackage);
+            relayToNeighbor(&sendPackage);
+            return msg;
+          }
+          //Recieve a TCP pack
+          else if(recievedMsg->dest == TOS_NODE_ID && recievedMsg->protocol == PROTOCOL_TCP){
+            dbg(GENERAL_CHANNEL, "Recieved a TCP Pack\n");
+            logPacket(&sendPackage);
+            call Transport.recieve(recievedMsg);
+            return msg;
+          }
+          //TCP pack reaches incorrect dest
+          else if(recievedMsg->dest != TOS_NODE_ID && recievedMsg->protocol == PROTOCOL_TCP){
+            dbg(GENERAL_CHANNEL, "TCP Pack at Incorrect Destination, Relaying!!!\n");
+            recievedMsg->TTL--;
+            makePack(&sendPackage, recievedMsg->src, recievedMsg->dest, recievedMsg->TTL, recievedMsg->protocol, recievedMsg->seq, (uint8_t*)recievedMsg->payload, length);
+            logPacket(&sendPackage);
+            relayToNeighbor(&sendPackage);
+            return msg;
+          }
+          dbg(GENERAL_CHANNEL, "Unexpected Packet Type, Dropping!!!\n");
+          return msg;
         }
-        return msg;
+         dbg(GENERAL_CHANNEL, "\tPackage(%d,%d) is Currrupted", recievedMsg->src, recievedMsg->dest);
+         return msg;
     }
+
+    
 
     event void CommandHandler.ping(uint16_t destination, uint8_t *payload) {
         call DistanceVectorRouting.ping(destination, payload);
