@@ -385,7 +385,7 @@ implementation {
 
         if(call Transport.connect(fd, &serverAddr) == SUCCESS){
           dbg(GENERAL_CHANNEL, "App Client Connection Was Successful!!!\n");
-          call writeTimer.startTimer(60000)
+          call writeTimer.startTimer(60000);
         } else dbg(GENERAL_CHANNEL, "Connection Was Not Successful!!!\n");
       } else dbg(GENERAL_CHANNEL, "Binding Was Not Successful!!!\n");
     }
