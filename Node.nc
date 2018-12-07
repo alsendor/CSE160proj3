@@ -110,7 +110,7 @@ implementation {
 
 //initialize timer to update table
   event void tableUpdateTimer.fired(){
-    dbg(GENERAL_CHANNEL, "tableUpdateTimer.fired() {\n");
+    //dbg(GENERAL_CHANNEL, "tableUpdateTimer.fired() {\n");
     if(initialized == FALSE){
       initialize();
       initialized = TRUE;
