@@ -55,8 +55,8 @@ implementation {
   uint16_t nodeSeq = 0;
 
   socket_t fd;
-  bool fired = false;
-  bool initialized = false;
+  bool fired = FALSE;
+  bool initialized = FALSE;
 
   pack sendPackage;
 
@@ -102,7 +102,7 @@ implementation {
     t0 = 20000 + call Random.rand32() % 1000;
     tI = 25000 + call Random.rand32() % 10000;
 
-    if(fired = false){
+    if(fired = FALSE){
       call tableUpdateTimer.startPeriodic(t0, tI);
       fired = true;
     }
@@ -111,7 +111,7 @@ implementation {
 //initialize timer to update table
   event void tableUpdateTimer.fired(){
     dbg(GENERAL_CHANNEL, "tableUpdateTimer.fired() {\n");
-    if(initialized == false){
+    if(initialized == FALSE){
       initialize();
       initialized = true;
     } else sendTableToNeighbors();
@@ -180,7 +180,7 @@ implementation {
         pack* myMsg = (pack*) payload;
         pack* recievedMsg;
         uint8_t nextHop;
-        bool alteredRoute = false;
+        bool alteredRoute = FALSE;
 
         if(length != sizeof(pack)) {
           //Check if we have seen the message
@@ -264,7 +264,7 @@ implementation {
       nodeSeq++;
       dbg(GENERAL_CHANNEL, "\tPackage(%d,%d) Ping Sent\n", TOS_NODE_ID, destination);
       logPacket(&sendPackage);
-      if(initialized = false){
+      if(initialized = FALSE){
         call Sendor.send(sendPackage, AM_BROADCAST_ADDR);
       } else call Sendor.send(sendPackage, findNextHop(destination));
         //call DistanceVectorRouting.ping(destination, payload);
@@ -484,7 +484,7 @@ bool destIsNeighbor(pack* recievedMsg){
 
 //search for neighbors by broadcasting a ping with TTL of 1 meaning its a direct neighbor
 void scanNeighbors(){
-  if(initialized = false){
+  if(initialized = FALSE){
     nodeSeq++;
     makePack(&sendPackage, TOS_NODE_ID, AM_BROADCAST_ADDR, 1, PROTOCOL_PING, nodeSeq, "NeighborSearch", PACKET_MAX_PAYLOAD_SIZE);
     call Sendor.send(sendPackage, AM_BROADCAST_ADDR);
