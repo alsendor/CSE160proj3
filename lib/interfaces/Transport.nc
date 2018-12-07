@@ -1,5 +1,6 @@
 //#include "../../packet.h"
 #include "../../includes/socket.h"
+#include "../../includes/TCPpack.h"
 
 /**
  * The Transport interface handles sockets and is a layer of abstraction
@@ -146,4 +147,29 @@ interface Transport{
    command error_t listen(socket_t fd);
 
    command socket_t findSocket(uint16_t dest, uint8_t srcPort, uint8_t destPort);
-}
+
+   command void makePack(pack *Package, uint16_t src, uint16_t dest, uint16_t TTL, uint16_t protocol, uint16_t seq, uint8_t* payload, uint8_t length);
+
+   command void makeTCPPack(tcp_packet * TCPheader, uint8_t destPort, uint8_t srcPort, uint16_t seq, uint16_t ack, uint8_t flag, uint8_t advertisedWindow, uint8_t numBytes, uint8_t* payload);
+
+   command void makeAckPack(tcp_packet* TCPheader, uint8_t destPort, uint8_t srcPort, uint16_t seq, uint8_t flag, uint8_t advertisedWindow);
+
+   command tcp_packet* makeSynPack(tcp_packet* TCPheader, uint8_t destPort, uint8_t srcPort, uint16_t seq);
+
+   command uint8_t calcWindow(socket_store_t* sock, uint16_t advertisedWindow);
+
+   command pack send(socket_store_t * s, pack IPpack);
+
+   command socket_store_t getSocket(socket_t fd);
+
+   command  bool isValidSocket(socket_t fd);
+
+   command void  passSeq(uint16_t* IPSequence);
+
+   command void stopWait(socket_store_t sock, uint8_t data, uint16_t IPseqnum);
+
+   command void passNeighborsList(uint8_t* neighbors[]);
+
+   command socket_t findSocket(uint8_t destAddr, uint8_t srcPort, uint8_t destPort);
+
+ }

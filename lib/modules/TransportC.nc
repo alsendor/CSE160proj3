@@ -12,4 +12,13 @@ implementation {
 
   components new Hashmap(socket_store_t, 10);
   TransportP.sockets -> HashmapC;
+
+  components RandomC as Random;
+  TransportP.Random -> Random;
+
+  components new SimpleSendC(AM_PACK);
+  TransportP.Sendor -> SimpleSendC;
+
+  components new TimerMilliC() as Timer1;
+  TransportP.timeoutTimer -> Timer1;
 }
