@@ -122,7 +122,7 @@ interface Transport{
     * @return socket_t - returns SUCCESS if you are able to attempt
     *    a closure with the fd passed, else return FAIL.
     */
-   command error_t close(socket_t fd);
+   command error_t close(socket_t fd, uint16_t seq);
 
    /**
     * A hard close, which is not graceful. This portion is optional.
