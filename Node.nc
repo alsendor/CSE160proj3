@@ -275,8 +275,9 @@ implementation {
 //Print mote's neighbors
     event void CommandHandler.printNeighbors() {
       int count = 0;
+      int i;
       dbg(NEIGHBOR_CHANNEL, "\t%d's Neighbors\n", TOS_NODE_ID);
-      for(int i = 1; i < NeighborListSize; i++){
+      for(i = 1; i < NeighborListSize; i++){
         if(NeighborList[i] > 0){
           count++;
         }
