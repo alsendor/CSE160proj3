@@ -491,7 +491,48 @@ void scanNeighbors(){
   } else reduceNeighborTTL();
 }
 
-//
+//Distance Vector Table
+void initialize(){
+  dbg(ROUTING_CHANNEL, "Initializing Distance Vector Routing Table!!!\n");
+
+  //Set all nodes in table to MAX_HOP and nextHop to an empty first cell
+  for(int i = 1; i < 20; i++){
+    routing[i][0] = i;
+    routing[i][1] = 255;
+    routing[i][2] = 0;
+  }
+  //Set cost for SELF
+  routing[TOS_NODE_ID][0] = TOS_NODE_ID;
+  routing[TOS_NODE_ID][1] = 0;
+  routing[TOS_NODE_ID][2] = TOS_NODE_ID;
+
+  //set cost to all neighbors
+  for(int j = 1; j < NeighborListSize; j++){
+    if(NeighborList[j] > 0){
+      insert(j, 1, j);
+    }
+  }
+}
+
+//insert data to touples
+void insert(uint8_t dest, uint8_t cost, uint8_t nextHop){
+  routing[dest][0] = dest;
+  routing[dest][1] = cost;
+  routing[dest][2] = nextHop;
+}
+
+//send DV table to neighbors
+void sendTableToNeighbors(){
+  for(int i = 1; i < NeighborListSize; i++){
+    if(NeighborList[i] > 0){
+      //i is the node's ID
+      splitHorizon((uint8_t) i);
+    }
+  }
+}
+
+//Merge routes, creating an updated DV table
+
 
 
 
