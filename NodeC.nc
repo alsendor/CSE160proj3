@@ -19,26 +19,31 @@ implementation {
     components MainC;
     components Node;
     components new AMReceiverC(AM_PACK) as GeneralReceive;
-    components new FloodingC(AM_FLOODING);
-    components new SimpleSendC(AM_PACK);
+    //components new FloodingC(AM_FLOODING);
     components new TimerMilliC() as acceptTimerC;
     components new TimerMilliC() as writeTimerC;
+    components new TimerMilliC() as timeoutTimerC;
+    components new TimerMilliC() as listenTimerC;
+    components new TimerMilliC() as tableUpdateTimerC;
+
 
     Node -> MainC.Boot;
 
     Node.Receive -> GeneralReceive;
 
+  //  Node.RecieveRoute -> RecieveRouteC;
+  //  Node.RecieveRouteReply -> RecieveRouteReply;
+
+    components new ListC(pack, 64) as packLogsC;
+    Node.packLogs -> packLogsC
+
+    components new SimpleSend(AM_PACK);
     Node.Sendor -> SimpleSendC;
-
-    Node.RecieveRoute -> RecieveRouteC;
-
-    Node.RecieveRouteReply -> RecieveRouteReply;
-
 
     components TransportC;
     Node.Transport -> TransportC;
 
-    components new ListC(socket_t, 64) as SocketListC;
+    components new ListC(socket_t, 10) as SocketListC;
     Node.SocketList -> SocketListC;
 
     components ActiveMessageC;
@@ -47,15 +52,18 @@ implementation {
     components CommandHandlerC;
     Node.CommandHandler -> CommandHandlerC;
 
-    //components FloodingC;
-    Node.Flooding -> FloodingC.SimpleSend;
+    components RandomC as Random;
+    Node.Random -> Random;
 
-    components NeighborDiscoveryC;
-    Node.NeighborDiscovery -> NeighborDiscoveryC;
+    //components NeighborDiscoveryC;
+    //Node.NeighborDiscovery -> NeighborDiscoveryC;
 
-    components DistanceVectorRoutingC;
-    Node.DistanceVectorRouting -> DistanceVectorRoutingC;
+    //components DistanceVectorRoutingC;
+    //Node.DistanceVectorRouting -> DistanceVectorRoutingC;
 
     Node.acceptTimer -> acceptTimerC;
     Node.writeTimer -> writeTimerC;
+    Node.timeoutTimer -> timeoutTimerC;
+    Node.listenTimer -> listenTimerC;
+    Node.tableUpdateTimer -> tableUpdateTimerC;
 }

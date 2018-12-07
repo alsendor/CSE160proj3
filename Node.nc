@@ -12,7 +12,7 @@
 #include "includes/protocol.h"
 #include "includes/CommandMsg.h"
 #include "includes/sendInfo.h"
-#include "includes/channels.h"
+//#include "includes/channels.h"
 #include "includes/socket.h"
 
 module Node {
@@ -22,11 +22,12 @@ module Node {
     uses interface Receive;
     uses interface CommandHandler;
 
-    uses interface SimpleSend as Flooding;
+    //uses interface SimpleSend as Flooding;
     uses interface SimpleSend as Sendor;
 
-    uses interface Receive as RecieveRoute;
-    uses interface Receive as RecieveRouteReply;
+    //uses interface Receive as RecieveRoute;
+    //uses interface Receive as RecieveRouteReply;
+    uses interface Random as Random;
 
     uses interface Transport;
     uses interface NeighborDiscovery as NeighborDiscovery;
@@ -34,17 +35,14 @@ module Node {
 
     uses interface Timer<TMilli> as acceptTimer;
     uses interface Timer<TMilli> as writeTimer;
+    uses interface Timer<TMilli> as tableUpdateTimer;
+    uses interface Timer<TMilli> as listenTimer;
+    uses interface Timer<TMilli> as timeoutTimer;
+    uses interface List<pack> as packLogs;
     uses interface List<socket_t> as SocketList;
 }
 
 implementation {
-
-    socket_t socket;
-    socket_t newSocket = 0;
-    uint8_t isNewConnection = 0;
-    uint16_t nb;
-    uint8_t numToSend;
-    uint8_t bytesWrittenOrRead;
 
     event void Boot.booted() {
         call AMControl.start();
