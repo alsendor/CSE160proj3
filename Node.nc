@@ -90,7 +90,7 @@ implementation {
 //Create start timer and interval timer
       t0 = 500 + call Random.rand32() % 1000;
       tI = 25000 + call Random.rand32() % 10000;
-      call acceptTimer.startPeriodic(t0, tI);
+      call acceptTimer.startPeriodicAt(t0, tI);
       dbg(GENERAL_CHANNEL, "Booted\n");
     }
 
@@ -103,7 +103,7 @@ implementation {
     tI = 25000 + call Random.rand32() % 10000;
 
     if(fired = FALSE){
-      call tableUpdateTimer.startPeriodic(t0, tI);
+      call tableUpdateTimer.startPeriodicAt(t0, tI);
       fired = TRUE;
     }
   }
