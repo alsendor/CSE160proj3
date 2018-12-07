@@ -284,7 +284,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       call sockets.remove(fd);
       newSocket.dest.port = ROOT_SOCKET_PORT;
       newSocket.dest.addr = ROOT_SOCKET_ADDR;
-      newSocket.src. = addr->port;
+      newSocket.src = addr->port;
 
       dbg(GENERAL_CHANNEL, "\t -- Successful Bind\n");
       //Insert socket back into hashtable
