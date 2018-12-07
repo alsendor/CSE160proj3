@@ -108,6 +108,38 @@ implementation {
     }
   }
 
+//initialize timer to update table
+  event void tableUpdateTimer.fired(){
+    dbg(GENERAL_CHANNEL, "tableUpdateTimer.fired() {\n");
+    if(initialized == false){
+      initialize();
+      initialized = true;
+    } else sendTableToNeighbors();
+  }
+
+//initialize timer to listen for sockets
+  event void listenTimer.fired(){
+    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
+    socket_store_t sockListen;
+    int length;
+
+    fd = call Transport.accept(fd);
+
+    if(fd != (socket_t)NULL){
+      //Test for size of socketList 
+      if(call SocketList.size() < 10){
+        dbg(GENERAL_CHANNEL, "\t-- Saved new fd: %d\n", fd);
+        call SocketList.pushback(fd);
+      } else dbg(GENERAL_CHANNEL, "\t-- SocketList is full\n");
+
+        sockListen = call Transport.getSocket(fd);
+        length = call Transport.read(fd, (uint8_t*)sockListen.rcvdBuff, SOCKET_BUFFER_SIZE);
+        dbg(GENERAL_CHANNEL,"\t-- Buffer length: %d\n", length);
+    } else dbg(GENERAL_CHANNEL, "\t-- fd is NULL\n");
+
+  }
+
+
     event void AMControl.startDone(error_t err) {
         if(err == SUCCESS) {
             dbg(GENERAL_CHANNEL, "Radio On\n");
