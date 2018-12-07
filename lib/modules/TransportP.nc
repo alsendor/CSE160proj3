@@ -515,9 +515,9 @@ command void Transport.stopWait(socket_store_t sock, uint8_t data, uint16_t IPse
 
       //Find our length of read space in buffer
       if(socket.lastRcvd >= socket.lastRead){
-        len = socket.lastRcvd - socket.lastRead
+        len = socket.lastRcvd - socket.lastRead;
       } else if(socket.lastRcvd < socket.lastRead) {
-        len = SOCKET_BUFFER_SIZE - socket.lastRead + socket.lastRcvd
+        len = SOCKET_BUFFER_SIZE - socket.lastRead + socket.lastRcvd;
       }
       dbg(GENERAL_CHANNEL, "\t -- Read Space Length: %d\n", len);
 
