@@ -474,7 +474,8 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
       case 3://FIN
         dbg(GENERAL_CHANNEL, "\tTransport.receive() default flag FIN\n");
-        call Transport.close(fd, seq);
+        //call Transport.close(fd, seq);
+        return SUCCESS;
         break;
 
       case 4://RST
