@@ -35,7 +35,6 @@ implementation {
   uint8_t transfer;
   uint8_t dataSent = 0;
   uint8_t firstNeighbor = 0;
-  uint8_t sentData = 0;
   bool send = TRUE;
   pack sendMessage;
 
@@ -64,11 +63,10 @@ command void Transport.passSeq(uint16_t* seq) {
 	}
 //Passng the neighbor list
   command void Transport.passNeighborsList(uint8_t* neighbors[]) {
-    int i;
     dbg(GENERAL_CHANNEL, "Passing Neighbor List\n");
   		memcpy(NeighborList, (void*)neighbors, sizeof(neighbors));
       //iterate through neighborlist adding in all neighbors
-  		for(i = 1; i < 20; i++) {
+  		for(int i = 1; i < 20; i++) {
   			if(NeighborList[i] > 0) {
   				dbg(GENERAL_CHANNEL, "%d's Neighbor is: %d\n", TOS_NODE_ID, i);
   				firstNeighbor = i;
@@ -150,6 +148,12 @@ command socket_t Transport.findSocket(uint8_t destAddr, uint8_t srcPort, uint8_t
 		}
 	}
 
+//Compute calculated window based off advertised window minus things we have sent
+  command uint8_t Transport.calcWindow(socket_store_t* sock, uint16_t advertisedWindow){
+
+  		return advertisedWindow - (sock->lastSent - sock->lastAck - 1);
+  	}
+
 //Test if socket is valid based off file descriptor
 command bool Transport.isValidSocket(socket_t fd){
 		if(call sockets.contains(fd)){
@@ -157,10 +161,77 @@ command bool Transport.isValidSocket(socket_t fd){
     } else return FALSE;
 	}
 
-//Compute calculated window based off advertised window minus things we have sent
-command uint8_t Transport.calcWindow(socket_store_t* sock, uint16_t advertisedWindow){
-  
-		return advertisedWindow - (sock->lastSent - sock->lastAck - 1);
+//Sending the packets and socket data
+command pack Transport.send(socket_store_t *s, pack IPpack) {
+		// Make TCPpack pointer for payload of IP Pack
+		TCPpack* data;
+		data = (TCPpack*)IPpack.payload;
+		dbg(GENERAL_CHANNEL, "\t\tTransport.send()\n");
+		dbg(GENERAL_CHANNEL, "\t\tIP PACK LAYER\n");
+		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: Src->%d, Dest-> %d, Seq->%d\n", IPpack.src, IPpack.dest, IPpack.seq);
+		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: TTL->%d\n", IPpack.TTL);
+		dbg(GENERAL_CHANNEL, "\t\tTCP PACK LAYER\n");
+		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: destPort->%d, srcPort-> %d, Seq->%d\n", data->destPort, data->srcPort, data->seq);
+		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: ack->%d, numBytes->%d\n", data->ack, data->numBytes);
+		if (NeighborList[IPpack.dest] > 0) {
+			firstNeighbor = IPpack.dest;
+		}
+		call Sendor.send(IPpack, firstNeighbor);
+		dbg(GENERAL_CHANNEL, "\t\tSocket Data:\n");
+		//data->destPort = s->dest.port;
+    //data->srcPort = s->src;
+		dbg(GENERAL_CHANNEL, "\t\tdestPort: %u, destAddr: %u, srcPort: %u, \n", s->dest.port, s->dest.addr, s->src);
+		dbg(GENERAL_CHANNEL, "\t\tsocket->srcPort: %u\n", data->srcPort);
+		dbg(GENERAL_CHANNEL, "\t\tData->advertisedWindow: %u, Data->ack: %u\n", data->advertisedWindow, data->ack);
+		dbg(GENERAL_CHANNEL, "Sent\n");
+
+		return IPpack;
+	}
+
+//Stop and wait packet handling
+command void Transport.stopWait(socket_store_t sock, uint8_t data, uint16_t IPseqnum) {
+		pack msg;
+		TCPpack tcp;
+		transfer = data;
+
+		dbg(GENERAL_CHANNEL, "\t\tStop and Wait!!! Trasnfer: %u, data: %u\n", transfer, data);
+		if(send == TRUE && sentData < transfer){
+			//make the TCPpack
+			tcpSeq = tcpSeq++;
+			tcp.destPort = sock.dest.port;
+			tcp.srcPort = sock.src;
+			dbg(GENERAL_CHANNEL, "\t\tTCP Seq: %u\n", tcpSeq);
+			tcp.seq = tcpSeq;
+			tcp.flag = 10;
+			tcp.numBytes = sizeof(sentData);
+			memcpy(tcp.payload, &sentData, TCP_MAX_PAYLOAD_SIZE);
+
+			sendMessage.dest = sock.dest.addr;
+			sendMessage.src = TOS_NODE_ID;
+			dbg(GENERAL_CHANNEL, "\t\tIP Seq Before: %u\n", IPseqnum);
+			sendMessage.seq = IPseqnum;
+
+			if(IPseq == 0){
+				IPseq = IPseqnum;
+      }
+			sendMessage.TTL = 15;
+			sendMessage.protocol = PROTOCOL_TCP;
+			memcpy(sendMessage.payload, &tcp, TCP_MAX_PAYLOAD_SIZE);
+
+			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", sentData, sock.dest.addr, sock.dest.port);
+			//call Transport.send(&sock, msg);
+			if (NeighborList[sendMessage.dest] > 0) {
+				firstNeighbor = sendMessage.dest;
+				dbg(GENERAL_CHANNEL, "\t\tChanged firstNeighbor: %d\n", sendMessage.dest);
+			}
+			call Sendor.send(sendMessage, firstNeighbor);
+			send = FALSE;
+			sentData++;
+
+			if(sentData != transfer){
+				call timeoutTimer.startTimer(12000);
+      } else call timeoutTimer.stop();
+		}
 	}
 
   command socket_t Transport.socket() {
