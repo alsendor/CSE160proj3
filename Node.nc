@@ -574,8 +574,28 @@ bool mergeRoute(uint8_t* newRoute, uint8_t src){
         *(poisonTable + (i * 3) + 1) = 25;
       }
     }
-    //payload is too large, so we send in chunks 
+    //payload is too large, so we send in chunks starting from 0 to send first table
+    for(int i = 0; i < 20; i++){
+      //send the next portion of the table to the next node
+      if(i % 7 == 0){
+        nodeSeq++;
+        makePack(&sendPackage, TOS_NODE_ID, nextHop, 2, PROTOCOL_DV, nodeSeq, poisonTable, sizeof(routing));
+        call Sendor.send(sendPackage, nextHop);
+      }
+      poisonTable += 3;
+    }
   }
+
+//Search route table for next Hop
+uint8_t findNextHop(uint8_t dest){
+  uint8_t nextHop;
+  for(int i = 0; i <= poolSize; i++){
+    if(routing[i][0] == dest){
+      nextHop = routing[i][2];
+      return nextHop;
+    }
+  }
+}
 
 
 
