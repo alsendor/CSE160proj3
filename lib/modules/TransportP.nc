@@ -33,7 +33,7 @@ implementation {
   uint16_t* IPseq = 0;
   uint8_t NeighborList[19];
   uint8_t transfer;
-  uint8_t dataSent = 0;
+  uint8_t datasent = 0;
   uint8_t firstNeighbor = 0;
   bool send = TRUE;
   pack sendMessage;
