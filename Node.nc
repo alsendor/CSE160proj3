@@ -102,7 +102,7 @@ implementation {
     t0 = 20000 + call Random.rand32() % 1000;
     tI = 25000 + call Random.rand32() % 10000;
 
-    if(fired = FALSE){
+    if(!fired){
       call tableUpdateTimer.startPeriodicAt(t0, tI);
       fired = TRUE;
     }
