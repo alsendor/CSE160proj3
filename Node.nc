@@ -119,8 +119,8 @@ implementation {
 
 //initialize timer to listen for sockets
   event void listenTimer.fired(){
-    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
     socket_store_t sockListen;
+    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
     int length;
 
     fd = call Transport.accept(fd);
