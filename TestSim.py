@@ -140,10 +140,9 @@ class TestSim:
         self.t.addChannel(channelName, out);
 
     def cmdTestServer(self, address, port):
-
         def cmdTestClient(self, dest, srcPort, destPort, transfer):
             def cmdClientClose(self, client_addr, dest, srcPort, destPort):
-        self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
+                self.sendCMD(self.CMD_CLOSE_CONNECTION, target, "{0}{1}{2}".format(chr(dest), chr(srcPort), chr(destPort)));
 
 def main():
     s = TestSim();
