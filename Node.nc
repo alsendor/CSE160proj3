@@ -448,7 +448,8 @@ void addNeighbor(uint8_t Neighbor){
 
 //Dropping neighborPing
   void reduceNeighborTTL(){
-    for(int i = 0; i < NeighborListSize; i++){
+    int i;
+    for(i = 0; i < NeighborListSize; i++){
       if(NeighborList[i] == 1){
         NeighborList[i] = 0;
         routing[i][1] = 255;
