@@ -301,16 +301,21 @@ implementation {
         dbg(GENERAL_CHANNEL, "%s\n", payload);
     }
 
-    event void CommandHandler.setTestServer(uint8_t address, uint8_t port) {
+//Set server port & address for TCP and ensure bind is successful
+    event void CommandHandler.setTestServer(uint8_t port) {
         socket_addr_t requiredPort;
-        dbg(GENERAL_CHANNEL, "New server event. \n");
+        dbg(GENERAL_CHANNEL, "Initialized Server Port: %d\n", port);
 
         requiredPort.addr = TOS_NODE_ID;
         requiredPort.port = port;
-        socket = call Transport.socket();
-        call Transport.listen(socket);
 
-        call acceptTimer.startPeriodic(30000);
+        if(call Transport.bind(fd, &requiredPort) == SUCCESS){
+          call Transport.passNeighborList(&NeighborList);
+          //Make sure we are listeing
+          if(call Transport.listen(fd) == SUCCESS){
+            call listenTimer.startTimer(30000);
+          }
+        }
     }
 
     event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t transfer) {
