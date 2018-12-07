@@ -310,6 +310,7 @@ implementation {
         requiredPort.port = port;
 
         if(call Transport.bind(fd, &requiredPort) == SUCCESS){
+          dbg(GENERAL_CHANNEL, "Server Bind Was Successful!!!\n");
           call Transport.passNeighborList(&NeighborList);
           //Make sure we are listeing
           if(call Transport.listen(fd) == SUCCESS){
@@ -318,28 +319,48 @@ implementation {
         }
     }
 
+//Set client port and address for TCP and ensure bind is successful
     event void CommandHandler.setTestClient(uint16_t dest, uint8_t srcPort, uint8_t destPort, uint8_t transfer) {
-        socket_addr_t requiredPort;
-        socket_addr_t serverInfo;
-        dbg(GENERAL_CHANNEL, "New client event. \n");
-        dbg(GENERAL_CHANNEL, "");
+        socket_addr_t serverAddr, socketAddr;
+        socket_store_t socket;
+        error_t check = FAIL;
+        fd = call Transport.socket();
 
-        requiredPort.addr = TOS_NODE_ID;
-        requiredPort.port = srcPort;
-        socket = call Transport.socket();
-        call Transport.listen(socket);
+        socketAddr.port = srcPort;
+        socketAddr.addr = TOS_NODE_ID;
 
-        serverInfo.addr = dest;
-        serverInfo.port = destPort;
-        call Transport.connect(socket, &serverInfo);
+        if(call Transport.bind(fd, &socketAddr) == SUCCESS){
+          dbg(GENERAL_CHANNEL, "Client Bind Was Successful!!!\n");
+          serverAddr.port = destPort;
+          serverAddr.addr = dest;
+          call Transport.passNeighborList(&NeighborList);
 
-        isNewConnection = 1;
-        nb = transfer;
-        numToSend = 0;
-        call writeTimer.startPeriodic(30000);
+          if(call Transport.connect(fd, &serverAddr) == SUCCESS){
+            dbg(GENERAL_CHANNEL, "Connection Was Successful!!!\n");
+            call writeTimer.startTimer(60000)
+          } else dbg(GENERAL_CHANNEL, "Connection Was Not Successful!!!\n");
+        } else dbg(GENERAL_CHANNEL, "Binding Was Not Successful!!!\n");
     }
 
-    event void CommandHandler.setAppServer() {}
+//Remake of setTestServer
+    event void CommandHandler.setAppServer() {
+      socket_addr_t requiredPort;
+      dbg(GENERAL_CHANNEL, "Initialized Server Port: %d\n", port);
+
+      fd = call Transport.socket();
+      requiredPort.addr = TOS_NODE_ID;
+      requiredPort.port = port;
+
+      if(call Transport.bind(fd, &requiredPort) == SUCCESS){
+        dbg(GENERAL_CHANNEL, "Server Bind Was Successful!!!\n");
+        call Transport.passNeighborList(&NeighborList);
+        //Make sure we are listeing
+        if(call Transport.listen(fd) == SUCCESS){
+          call listenTimer.startTimer(30000);
+        }
+      }
+
+    }
 
     event void CommandHandler.setAppClient() {}
 
