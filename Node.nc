@@ -79,16 +79,19 @@ implementation {
   uint8_t findNextHop(uint8_t dest);
   bool mergeRoute(uint8_t* newRoute, uint8_t src);
   void splitHorizon(uint8_t nextHop);
-  
 
-
-
-
+//Booting event
     event void Boot.booted() {
+        uint32_t t0, tI;
         call AMControl.start();
-        dbg(GENERAL_CHANNEL, "Booted\n");
-        call NeighborDiscovery.start();
-        call DistanceVectorRouting.start();
+      //call NeighborDiscovery.start();
+      //call DistanceVectorRouting.start();
+
+      //Create start timer and interval timer
+      t0 = 500 + call Random.rand32() % 1000;
+      tI = 25000 + call Random.rand32() % 10000;
+      call Timer.startPeriodic(t0, tI);
+      dbg(GENERAL_CHANNEL, "Booted\n");
     }
 
     event void AMControl.startDone(error_t err) {
