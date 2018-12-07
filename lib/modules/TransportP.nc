@@ -155,6 +155,12 @@ command bool Transport.isValidSocket(socket_t fd){
     } else return FALSE;
 	}
 
+//Compute calculated window based off advertised window minus things we have sent
+command uint8_t Transport.calcWindow(socket_store_t* sock, uint16_t advertisedWindow){
+  
+		return advertisedWindow - (sock->lastSent - sock->lastAck - 1);
+	}
+
   command socket_t Transport.socket() {
     int i;
 		socket_store_t newSocket;
