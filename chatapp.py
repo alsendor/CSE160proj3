@@ -31,11 +31,11 @@ def main():
     # After sending a ping, simulate a little to prevent collision.
     s.setAppServer()
     s.runTime(10)
-    s.newClient(2, 1, 10, 41, 5)
+    s.setAppClient(2, 1, 10, 41, 5)
     s.runTime(10)
-    s.newClient(3, 1, 11, 41, 5)
+    s.setAppClient(3, 1, 11, 41, 5)
     s.runTime(10)
-    s.newClient(4, 1, 12, 41, 20)
+    s.setAppClient(4, 1, 12, 41, 20)
     s.runTime(10)
 
     s.runTime(10)
