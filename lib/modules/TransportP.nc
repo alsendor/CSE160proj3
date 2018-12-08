@@ -647,7 +647,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       msg.TTL = 15;
       msg.protocol = PROTOCOL_TCP;
       dbg(GENERAL_CHANNEL, "Here 3\n");
-      memcpy(msg.payload, (void*)tcp_msg, TCP_MAX_PAYLOAD_SIZE);
+      memcpy(msg.payload, &tcp_msg, TCP_MAX_PAYLOAD_SIZE);
       call sockets.remove(fd);
       call sockets.insert(fd, socket);
       dbg(GENERAL_CHANNEL, "Here 4\n");
