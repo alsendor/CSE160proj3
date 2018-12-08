@@ -598,8 +598,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			msg.seq = seq;
 			msg.TTL = TTL;
 			msg.protocol = PROTOCOL_TCP;
-      dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
-			memcpy(msg.payload, (void*)tcp_msg, TCP_MAX_PAYLOAD_SIZE);
+			memcpy(msg.payload, &tcp_msg, TCP_MAX_PAYLOAD_SIZE);
       /*call Transport.makePack(&msg, (uint16_t)TOS_NODE_ID, (uint16_t)newConnection.src,
 						(uint16_t)19,	PROTOCOL_TCP,(uint16_t)1,(void*)tcp_msg,(uint8_t)sizeof(tcp_msg));*/
       newConnection.state = SYN_SENT;
