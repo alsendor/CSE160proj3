@@ -627,17 +627,17 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
   command error_t Transport.close(socket_t fd, uint16_t seq) {
     socket_store_t socket;
     pack msg;
-    TCPpack* tcp_msg;
+    TCPpack tcp_msg;
     dbg(GENERAL_CHANNEL, "Transport Close\n");
 
     if(call sockets.contains(fd)) {
       socket = call sockets.get(fd);
       dbg(GENERAL_CHANNEL, "Here 1\n");
-      tcp_msg->destPort = socket.dest.port;
+      tcp_msg.destPort = socket.dest.port;
       dbg(GENERAL_CHANNEL, "Here 1\n");
-      tcp_msg->seq = seq;
-      tcp_msg->flag = RST;
-      tcp_msg->srcPort = socket.src;
+      tcp_msg.seq = seq;
+      tcp_msg.flag = RST;
+      tcp_msg.srcPort = socket.src;
       dbg(GENERAL_CHANNEL, "Here 1\n");
       tcp_msg->numBytes = 0;
       dbg(GENERAL_CHANNEL, "Here 2\n");
