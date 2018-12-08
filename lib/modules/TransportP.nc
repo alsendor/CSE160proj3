@@ -167,23 +167,23 @@ command pack Transport.send(socket_store_t *s, pack IPpack) {
 		// Make TCPpack pointer for payload of IP Pack
 		TCPpack* data;
 		data = (TCPpack*)IPpack.payload;
-		dbg(GENERAL_CHANNEL, "\t\tTransport.send()\n");
-		dbg(GENERAL_CHANNEL, "\t\tIP PACK LAYER\n");
-		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: Src->%d, Dest-> %d, Seq->%d\n", IPpack.src, IPpack.dest, IPpack.seq);
-		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: TTL->%d\n", IPpack.TTL);
-		dbg(GENERAL_CHANNEL, "\t\tTCP PACK LAYER\n");
-		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: destPort->%d, srcPort-> %d, Seq->%d\n", data->destPort, data->srcPort, data->seq);
-		dbg(GENERAL_CHANNEL, "\t\t\tSending Packet: ack->%d, numBytes->%d\n", data->ack, data->numBytes);
+		dbg(GENERAL_CHANNEL, "Transport.send()\n");
+		dbg(GENERAL_CHANNEL, "IP PACK LAYER\n");
+		dbg(GENERAL_CHANNEL, "Sending Packet: Src->%d, Dest-> %d, Seq->%d\n", IPpack.src, IPpack.dest, IPpack.seq);
+		dbg(GENERAL_CHANNEL, "Sending Packet: TTL->%d\n", IPpack.TTL);
+		dbg(GENERAL_CHANNEL, "TCP PACK LAYER\n");
+		dbg(GENERAL_CHANNEL, "Sending Packet: destPort->%d, srcPort-> %d, Seq->%d\n", data->destPort, data->srcPort, data->seq);
+		dbg(GENERAL_CHANNEL, "Sending Packet: ack->%d, numBytes->%d\n", data->ack, data->numBytes);
 		if (NeighborList[IPpack.dest] > 0) {
 			firstNeighbor = IPpack.dest;
 		}
 		call Sendor.send(IPpack, firstNeighbor);
-		dbg(GENERAL_CHANNEL, "\t\tSocket Data:\n");
+		dbg(GENERAL_CHANNEL, "Socket Data:\n");
 		//data->destPort = s->dest.port;
     //data->srcPort = s->src;
-		dbg(GENERAL_CHANNEL, "\t\tdestPort: %u, destAddr: %u, srcPort: %u, \n", s->dest.port, s->dest.addr, s->src);
-		dbg(GENERAL_CHANNEL, "\t\tsocket->srcPort: %u\n", data->srcPort);
-		dbg(GENERAL_CHANNEL, "\t\tData->advertisedWindow: %u, Data->ack: %u\n", data->advertisedWindow, data->ack);
+		dbg(GENERAL_CHANNEL, "destPort: %u, destAddr: %u, srcPort: %u, \n", s->dest.port, s->dest.addr, s->src);
+		dbg(GENERAL_CHANNEL, "socket->srcPort: %u\n", data->srcPort);
+		dbg(GENERAL_CHANNEL, "Data->advertisedWindow: %u, Data->ack: %u\n", data->advertisedWindow, data->ack);
 		dbg(GENERAL_CHANNEL, "Sent\n");
 
 		return IPpack;
@@ -195,13 +195,14 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 		TCPpack tcp;
 		transfer = data;
 
-		dbg(GENERAL_CHANNEL, "\t\tStop and Wait! Transfer: %u, data: %u\n", transfer, data);
+		dbg(GENERAL_CHANNEL, "Stop and Wait! Transfer: %u, data: %u\n", transfer, data);
+    dbg(GENERAL_CHANNEL, "%hhu datasent %hhu transfer", datasent, transfer);
 		if(send == TRUE && datasent < transfer){
 			//make the TCPpack
 			tcpSeq = tcpSeq++;
 			tcp.destPort = sock.dest.port;
 			tcp.srcPort = sock.src;
-			dbg(GENERAL_CHANNEL, "\t\tTCP Seq: %u\n", tcpSeq);
+			dbg(GENERAL_CHANNEL, "TCP Seq: %u\n", tcpSeq);
 			tcp.seq = tcpSeq;
 			tcp.flag = 10;
 			tcp.numBytes = sizeof(datasent);
@@ -209,7 +210,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 
 			sendMessage.dest = sock.dest.addr;
 			sendMessage.src = TOS_NODE_ID;
-			dbg(GENERAL_CHANNEL, "\t\tIP Seq Before: %u\n", IPseqnum);
+			dbg(GENERAL_CHANNEL, "IP Seq Before: %u\n", IPseqnum);
 			sendMessage.seq = IPseqnum;
 
 			if(IPseq == 0){
@@ -219,11 +220,11 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 			sendMessage.protocol = PROTOCOL_TCP;
 			memcpy(sendMessage.payload, &tcp, TCP_MAX_PAYLOAD_SIZE);
 
-			dbg(GENERAL_CHANNEL, "\t\tSending num: %u to Node: %u over socket: %u\n", datasent, sock.dest.addr, sock.dest.port);
+			dbg(GENERAL_CHANNEL, "Sending num: %u to Node: %u over socket: %u\n", datasent, sock.dest.addr, sock.dest.port);
 			//call Transport.send(&sock, msg);
 			if (NeighborList[sendMessage.dest] > 0) {
 				firstNeighbor = sendMessage.dest;
-				dbg(GENERAL_CHANNEL, "\t\tChanged firstNeighbor: %d\n", sendMessage.dest);
+				dbg(GENERAL_CHANNEL, "Changed firstNeighbor: %d\n", sendMessage.dest);
 			}
 			call Sendor.send(sendMessage, firstNeighbor);
 			send = FALSE;
@@ -238,7 +239,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
   command socket_t Transport.socket() {
     int i;
 		socket_store_t newSocket;
-		dbg(GENERAL_CHANNEL, "\tRunning Transport.socket()\n");
+		dbg(GENERAL_CHANNEL, "Running Transport.socket()\n");
 
     //Check the number of socket keys
     fdKeys++;
