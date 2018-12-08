@@ -639,7 +639,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
       tcp_msg.flag = RST;
       tcp_msg.srcPort = socket.src;
       dbg(GENERAL_CHANNEL, "Here 1\n");
-      tcp_msg->numBytes = 0;
+      tcp_msg.numBytes = 0;
       dbg(GENERAL_CHANNEL, "Here 2\n");
       msg.dest = socket.dest.addr;
       msg.src = TOS_NODE_ID;
