@@ -195,7 +195,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 		TCPpack tcp;
 		transfer = data;
 
-		dbg(GENERAL_CHANNEL, "\t\tStop and Wait!!! Trasnfer: %u, data: %u\n", transfer, data);
+		dbg(GENERAL_CHANNEL, "\t\tStop and Wait! Transfer: %u, data: %u\n", transfer, data);
 		if(send == TRUE && datasent < transfer){
 			//make the TCPpack
 			tcpSeq = tcpSeq++;

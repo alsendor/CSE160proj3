@@ -142,7 +142,7 @@ implementation {
 //initialize Timer for writing data
   event void writeTimer.fired(){
     socket_store_t sockWrite;
-    dbg(GENERAL_CHANNEL, "listenTimer.fired() {\n");
+    dbg(GENERAL_CHANNEL, "writeTimer.fired() {\n");
 
     if(call Transport.isValidSocket(fd)){
       dbg(GENERAL_CHANNEL, "\t\t\t    -- Socket is valid!!! \n");
