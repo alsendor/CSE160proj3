@@ -41,6 +41,8 @@ def main():
     s.runTime(10)
 
     s.clientClose(2 ,1 ,10, 41)
+    s.clientClose(3 ,1 ,11, 41)
+    s.clientClose(4 ,1 ,12, 41)
     s.runTime(10)
 
 if __name__ == '__main__':
