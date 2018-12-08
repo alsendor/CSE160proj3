@@ -38,7 +38,6 @@ def main():
     s.newClient(4, 1, 12, 41, 20)
     s.runTime(10)
 
-    s.stopAndWait()
     s.runTime(10)
 
     s.clientClose(2 ,1 ,10, 41)
