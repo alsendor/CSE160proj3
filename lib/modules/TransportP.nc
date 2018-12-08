@@ -114,7 +114,7 @@ command TCPpack* Transport.makeSynPack(TCPpack* TCPheader, uint8_t destPort, uin
   command void Transport.makeAckPack(TCPpack* TCPheader, uint8_t destPort, uint8_t srcPort, uint16_t seq, uint8_t flag, uint8_t advertisedWindow) {
   		TCPheader->destPort = destPort;
   		TCPheader->srcPort = srcPort;
-      TCPheader->flag = flag;
+      TCPheader->flag = ACK;
   		TCPheader->seq = seq;
   		TCPheader->advertisedWindow = advertisedWindow;
   	}
@@ -604,6 +604,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
 						(uint16_t)19,	PROTOCOL_TCP,(uint16_t)1,(void*)tcp_msg,(uint8_t)sizeof(tcp_msg));*/
       newConnection.state = SYN_SENT;
       call Transport.send(&newConnection, msg);
+      dbg(GENERAL_CHANNEL, "Sent SYN Pack\n");
 
       //Update hashtable
       call sockets.insert(fd, newConnection);
