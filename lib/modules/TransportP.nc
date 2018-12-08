@@ -583,7 +583,7 @@ command void Transport.stopAndWait(socket_store_t sock, uint8_t data, uint16_t I
     if (call sockets.contains(fd)) {
       newConnection = call sockets.get(fd);
 			call sockets.remove(fd);
-dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
+
       //Set destination port
       newConnection.dest = *addr;
 
@@ -602,6 +602,7 @@ dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
       /*call Transport.makePack(&msg, (uint16_t)TOS_NODE_ID, (uint16_t)newConnection.src,
 						(uint16_t)19,	PROTOCOL_TCP,(uint16_t)1,(void*)tcp_msg,(uint8_t)sizeof(tcp_msg));*/
       newConnection.state = SYN_SENT;
+      dbg(GENERAL_CHANNEL, "\tRunning Transport.connect(%u,%d)\n", fd, addr->addr);
       call Transport.send(&newConnection, msg);
 
       //Update hashtable
